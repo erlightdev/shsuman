@@ -1,0 +1,23 @@
+{
+  "name": "@shsuman/auth",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "check-types": "tsc -b"
+  },
+  "dependencies": {
+    "@better-auth/drizzle-adapter": "1.7.5",
+    "@shsuman/db": "*",
+    "better-auth": "1.7.5",
+    "drizzle-orm": "1.0.0-rc.4",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@shsuman/config": "*",
+    "typescript": "^6.0.3"
+  }
+}

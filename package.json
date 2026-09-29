@@ -1,0 +1,45 @@
+{
+  "name": "shsuman",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "check-types": "turbo run check-types",
+    "db:push": "turbo run db:push -F @shsuman/db --",
+    "db:studio": "turbo run db:studio -F @shsuman/db --",
+    "db:generate": "turbo run db:generate -F @shsuman/db --",
+    "db:migrate": "turbo run db:migrate -F @shsuman/db --",
+    "db:start": "turbo run db:start -F @shsuman/db --",
+    "db:watch": "turbo run db:watch -F @shsuman/db --",
+    "db:stop": "turbo run db:stop -F @shsuman/db --",
+    "db:down": "turbo run db:down -F @shsuman/db --",
+    "deploy": "turbo run deploy -F @shsuman/infra --",
+    "destroy": "turbo run destroy -F @shsuman/infra --",
+    "env:generate": "varlock codegen --path ./apps/web/ && varlock codegen --path ./apps/server/ && varlock codegen --path ./packages/db/",
+    "postinstall": "varlock codegen --path ./apps/web/ && varlock codegen --path ./apps/server/ && varlock codegen --path ./packages/db/",
+    "auth:generate": "cd apps/server && npm run auth:generate",
+    "check": "biome check --write ."
+  },
+  "dependencies": {
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.12",
+    "@shsuman/config": "*",
+    "@types/node": "^26.4.1",
+    "turbo": "^2.10.12",
+    "typescript": "^6.0.3",
+    "varlock": "1.18.0"
+  },
+  "packageManager": "npm@11.18.0",
+  "allowScripts": {
+    "esbuild": true,
+    "msgpackr-extract": true,
+    "workerd": true
+  }
+}

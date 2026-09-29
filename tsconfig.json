@@ -1,0 +1,3 @@
+{
+  "extends": "@shsuman/config/tsconfig.base.json"
+}
