@@ -5,7 +5,16 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import "varlock/auto-load";
 
+const hasAxiom = Boolean(process.env.AXIOM_TOKEN || process.env.AXIOM_API_KEY);
+
 export const observability = Effect.gen(function* () {
+  if (!hasAxiom) {
+    return {
+      dataset: undefined,
+      runtimeEnv: {},
+    };
+  }
+
   const { stage } = yield* Alchemy.Stack;
   const datasetName = `shsuman-${stage}-logs`;
 
@@ -36,7 +45,9 @@ export const observability = Effect.gen(function* () {
 export default Alchemy.Stack(
   "shsuman",
   {
-    providers: Layer.mergeAll(Axiom.providers(), Command.providers()),
+    providers: hasAxiom
+      ? Layer.mergeAll(Axiom.providers(), Command.providers())
+      : Command.providers(),
     state: Alchemy.localState(),
   },
   Effect.gen(function* () {
@@ -55,7 +66,7 @@ export default Alchemy.Stack(
     return {
       web: webDev.url,
       server: serverDev.url,
-      axiomDataset: observabilityResources.dataset.name,
+      axiomDataset: observabilityResources.dataset?.name,
     };
   }),
 );
