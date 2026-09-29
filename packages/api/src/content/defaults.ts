@@ -13,7 +13,7 @@ export const defaultContent: SiteContent = {
     currentCompany: "Insight Technology Pvt. Ltd.",
     location: "Kathmandu, Nepal",
     highlightRole: "Vice President, npCert",
-    portraitUrl: "https://www.shsuman.com.np/images/suman-sharma.jpeg",
+    portraitUrl: "/suman-k-sharma.webp",
     portraitAlt: "Portrait of Suman K. Sharma, IT & Cybersecurity Engineer, Consultant & Trainer",
     cvUrl: "/suman-k-sharma-cv.pdf",
   },
@@ -28,26 +28,18 @@ export const defaultContent: SiteContent = {
     ],
   },
   about: {
-    title: "Security‑minded engineer, trusted advisor.",
+    title: "Keeping critical systems secure since 2006.",
     summary:
-      "Results-driven IT & Cybersecurity Engineer with extensive experience in IT infrastructure management, cybersecurity, IT/IS audits, and executive leadership. Adept at strategic planning, risk management, and team supervision, with a strong technical background in network administration, server management, and cybersecurity best practices.",
-    passion: "Passionate about research, continuous learning, and contributing to cybersecurity training initiatives.",
+      "I lead Insight Technology, advising government, banking and education organizations on IT infrastructure, IS/IT audits and cyber risk.",
+    passion:
+      "Before that, I built and ran wireless networks in Nepal and supported U.S. operations in Iraq. Today I also train security teams and serve as Vice President of npCert.",
     facts: [
-      { term: "Currently", detail: "Executive Director, Insight Technology Pvt. Ltd." },
+      { term: "Role", detail: "Executive Director, Insight Technology" },
       { term: "Community", detail: "Vice President, npCert" },
       { term: "Education", detail: "B.Sc. Computer Networking & IT Security" },
       { term: "Based in", detail: "Kathmandu, Nepal" },
     ],
-    interests: [
-      "Poetry",
-      "Literature",
-      "Research",
-      "Travel",
-      "Hiking",
-      "Training",
-      "Technical documentation",
-      "Knowledge sharing",
-    ],
+    interests: ["Poetry", "Literature", "Travel", "Hiking"],
   },
   services: {
     title: "What I help organizations with.",
@@ -247,7 +239,7 @@ export const defaultContent: SiteContent = {
     title: "Suman K. Sharma — IT & Cybersecurity Engineer, Consultant & Trainer",
     description:
       "Suman K. Sharma is an IT & cybersecurity engineer, consultant and trainer in Kathmandu, Nepal, with 18+ years in infrastructure, IS/IT audit and risk management.",
-    ogImage: "https://www.shsuman.com.np/images/suman-sharma.jpeg",
+    ogImage: "/suman-k-sharma.webp",
     sameAs: ["https://www.linkedin.com/in/suman-sharma-a4611780", "http://www.facebook.com/in/sharmadsp"],
   },
 };

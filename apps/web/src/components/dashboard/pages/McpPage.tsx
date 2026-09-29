@@ -115,7 +115,7 @@ export function McpPage() {
         </h2>
         <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2">
           <code className="min-w-0 flex-1 truncate font-mono text-sm">{endpoint}</code>
-          <Badge variant="secondary" className="rounded-full">
+          <Badge variant="brand" className="rounded-full">
             Streamable HTTP
           </Badge>
           <CopyButton value={endpoint} label="Copy endpoint" />
@@ -131,7 +131,7 @@ export function McpPage() {
             <Label htmlFor="token-name">Token name</Label>
             <Input id="token-name" name="name" required maxLength={100} placeholder="e.g. Claude Desktop on laptop" />
           </div>
-          <Button type="submit" className="rounded-full" disabled={creating}>
+          <Button type="submit" className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-500/20" disabled={creating}>
             {creating ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Plus className="size-4" aria-hidden="true" />}
             Create token
           </Button>
@@ -219,9 +219,9 @@ export function McpPage() {
         ) : (
           <ul className="grid gap-2 sm:grid-cols-2">
             {tools.data?.map((tool) => (
-              <li key={tool.name} className="rounded-xl border border-border p-4">
-                <p className="font-mono text-xs text-muted-foreground">{tool.name}</p>
-                <p className="mt-1 text-sm font-medium text-foreground">{tool.title}</p>
+              <li key={tool.name} className="group rounded-xl border border-border p-4 transition-all hover:border-emerald-500/30 hover:bg-brand-8/30">
+                <p className="font-mono text-xs text-emerald-600 dark:text-emerald-400 font-medium">{tool.name}</p>
+                <p className="mt-1 text-sm font-medium text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">{tool.title}</p>
                 <p className="mt-1 text-sm text-muted-foreground">{tool.description}</p>
               </li>
             ))}

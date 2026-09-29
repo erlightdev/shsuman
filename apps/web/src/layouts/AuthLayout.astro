@@ -1,6 +1,7 @@
 ---
 import BlogCover from "@/components/blog/BlogCover.astro";
 import Icon from "@/components/common/Icon.astro";
+import { StudioBackground } from "@/components/ui/studio-background";
 import { defaultContent } from "@shsuman/api/content/defaults";
 import Layout from "./Layout.astro";
 
@@ -13,23 +14,37 @@ const { profile } = defaultContent;
 ---
 
 <Layout title={title} variant="bare" noindex>
-  <div class="flex h-dvh max-h-dvh flex-col justify-between overflow-y-auto lg:overflow-hidden p-4 sm:p-6">
-    <header class="flex items-center justify-between shrink-0">
+  <div class="relative flex h-dvh max-h-dvh flex-col justify-between overflow-y-auto lg:overflow-hidden p-4 sm:p-6 bg-[#03120a]">
+    <!-- Animated Full Page Background -->
+    <div aria-hidden="true" class="pointer-events-none fixed inset-0 z-0">
+      <StudioBackground client:load />
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60 backdrop-blur-[0.5px]" />
+    </div>
+
+    <!-- Header -->
+    <header class="relative z-10 flex items-center justify-between shrink-0">
       <a
         href="/"
-        class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs sm:text-sm font-medium text-foreground-tertiary transition-colors hover:text-foreground-primary hover:bg-foreground/5"
+        class="inline-flex items-center gap-2 rounded-full bg-white/10 dark:bg-white/5 border border-white/10 px-3.5 py-1.5 text-xs sm:text-sm font-medium text-white/90 backdrop-blur-md transition-colors hover:bg-white/20 hover:text-white"
       >
         <Icon name="arrow-up" class="size-3.5 sm:size-4 -rotate-90" />
         Back to home
       </a>
 
-      <span class="text-xs font-mono text-foreground-tertiary">
-        {profile.name}
-      </span>
+      <button
+        type="button"
+        id="theme-toggle"
+        aria-label="Toggle color theme"
+        class="inline-flex size-9 items-center justify-center rounded-full bg-white/10 dark:bg-white/5 border border-white/10 text-white/90 backdrop-blur-md transition-colors hover:bg-white/20 hover:text-white cursor-pointer"
+      >
+        <Icon name="sun" class="hidden size-4 dark:block" />
+        <Icon name="moon" class="size-4 dark:hidden" />
+      </button>
     </header>
 
-    <main class="flex flex-1 items-center justify-center py-2 sm:py-4 min-h-0">
-      <div class="grid w-full max-w-4xl lg:max-w-5xl gap-2 sm:gap-4 rounded-3xl border border-border bg-background p-2.5 sm:p-3 shadow-xs lg:grid-cols-2 lg:h-[min(34rem,75vh)]">
+    <!-- Main Auth Card -->
+    <main class="relative z-10 flex flex-1 items-center justify-center py-2 sm:py-4 min-h-0">
+      <div class="grid w-full max-w-4xl lg:max-w-5xl gap-2 sm:gap-4 rounded-3xl border border-white/15 bg-background/95 backdrop-blur-xl p-2.5 sm:p-3 shadow-2xl lg:grid-cols-2 lg:h-[min(34rem,75vh)]">
         <div class="relative hidden overflow-hidden rounded-2xl lg:block size-full min-h-0">
           <BlogCover variant="rings" badge class="absolute inset-0 size-full">
             <Icon name="shield" class="size-7 text-neutral-900" />
@@ -45,10 +60,15 @@ const { profile } = defaultContent;
         </div>
       </div>
     </main>
-
-    <footer class="text-center text-[11px] text-foreground-tertiary shrink-0 py-1">
-      &copy; {new Date().getFullYear()} {profile.name}. All rights reserved.
-    </footer>
   </div>
+
+  <script is:inline>
+    document.getElementById("theme-toggle")?.addEventListener("click", () => {
+      const dark = document.documentElement.classList.toggle("dark");
+      try {
+        localStorage.setItem("theme", dark ? "dark" : "light");
+      } catch {}
+    });
+  </script>
 </Layout>
 

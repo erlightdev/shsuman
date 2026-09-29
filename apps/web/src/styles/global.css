@@ -115,7 +115,8 @@
 
   html {
     -webkit-tap-highlight-color: transparent;
-    scroll-padding-top: 6rem;
+    scroll-padding-top: 2rem;
+    scroll-padding-bottom: 6rem;
     background-color: var(--bg-primary);
   }
 
@@ -177,6 +178,14 @@
   .container-rail {
     max-width: 80rem;
     margin-inline: auto;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 
   /* ---------- Primitives (shadcn-style) ---------- */

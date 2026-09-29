@@ -62,3 +62,23 @@ export const navGroups: { label: string; items: NavItem[] }[] = [
     ],
   },
 ];
+
+export function pathToRoute(pathname: string): DashboardRoute {
+  const clean = pathname.replace(/\/$/, "");
+  if (clean === "/dashboard" || clean === "") return { page: "overview" };
+  if (clean === "/dashboard/content") return { page: "content" };
+  if (clean.startsWith("/dashboard/content/")) {
+    return { page: "section", section: clean.replace("/dashboard/content/", "") };
+  }
+  if (clean === "/dashboard/blog") return { page: "blog" };
+  if (clean.startsWith("/dashboard/blog/")) {
+    return { page: "post", slug: clean.replace("/dashboard/blog/", "") };
+  }
+  if (clean === "/dashboard/resources") return { page: "resources" };
+  if (clean.startsWith("/dashboard/resources/")) {
+    return { page: "resource", slug: clean.replace("/dashboard/resources/", "") };
+  }
+  if (clean === "/dashboard/users") return { page: "users" };
+  if (clean === "/dashboard/mcp") return { page: "mcp" };
+  return { page: "overview" };
+}

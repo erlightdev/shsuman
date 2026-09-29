@@ -22,7 +22,7 @@ const external = item.url ? /^https?:/.test(item.url) : false;
 <Layout title={`${item.title} — ${profile.name}`} description={item.summary} siteName={profile.name}>
   <SiteNavbar client:load name={profile.name} items={nav.map((entry) => ({ name: entry.label, link: entry.href }))} />
 
-  <main id="main" class="pt-32 pb-24 sm:pt-40 sm:pb-32">
+  <main id="main" class="pt-12 pb-24 sm:pt-20 lg:pt-24 sm:pb-32">
     <article class="container-site max-w-3xl">
       <a href="/resources/" class="inline-flex items-center gap-2 text-sm text-foreground-tertiary hover:text-foreground-primary">
         <Icon name="arrow-up" class="size-4 -rotate-90" />

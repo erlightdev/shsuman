@@ -59,8 +59,8 @@ function ToolButton({
       onMouseDown={(event) => event.preventDefault()}
       onClick={onClick}
       className={cn(
-        "grid size-8 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-40",
-        active && "bg-accent text-foreground",
+        "grid size-8 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-brand-8 hover:text-emerald-700 dark:hover:text-emerald-300 disabled:opacity-40",
+        active && "bg-brand-8 text-emerald-700 dark:text-emerald-300 font-medium ring-1 ring-brand-base/20",
       )}
     >
       <Icon className="size-4" aria-hidden="true" />

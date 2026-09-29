@@ -833,7 +833,7 @@ export const AnimatedSidebarMenu = forwardRef<
       ref={forwardedRef as React.Ref<HTMLElement>}
       as="ul"
       inset={0}
-      pillClassName="rounded-xl bg-muted/70"
+      pillClassName="rounded-md bg-muted/70"
       pillContainerClassName="inset-y-auto top-0 h-9"
       data-slot="sidebar-menu"
       className={cn("flex w-full min-w-0 list-none flex-col gap-0.5", className)}
@@ -1022,6 +1022,7 @@ export interface AnimatedSidebarMenuButtonProps {
   target?: "_blank" | "_self" | "_parent" | "_top";
   rel?: string;
   onSelect?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void;
   className?: string;
 }
 
@@ -1037,6 +1038,7 @@ export function AnimatedSidebarMenuButton({
   target,
   rel,
   onSelect,
+  onClick,
   className,
 }: AnimatedSidebarMenuButtonProps) {
   const context = useAnimatedSidebar();
@@ -1050,7 +1052,13 @@ export function AnimatedSidebarMenuButton({
       event.preventDefault();
       return;
     }
-    onSelect?.();
+    if (onSelect || onClick) {
+      if (href && !target && !event.metaKey && !event.ctrlKey && !event.shiftKey) {
+        event.preventDefault();
+      }
+      onClick?.(event);
+      onSelect?.();
+    }
     const shouldCloseOnSelect =
       closeOnSelect ?? ariaExpanded === undefined;
     if (context.isMobile && shouldCloseOnSelect) {
@@ -1071,7 +1079,7 @@ export function AnimatedSidebarMenuButton({
         <motion.span
           layoutId={context.layoutId}
           transition={context.reduce ? { duration: 0 } : SPRING_LAYOUT}
-          className="absolute inset-0 rounded-xl bg-muted"
+          className="absolute inset-0 rounded-md bg-brand-8 border border-brand-base/20 shadow-xs"
         />
       ) : null}
       {icon ? (
@@ -1127,10 +1135,10 @@ export function AnimatedSidebarMenuButton({
   );
 
   const interactiveClassName = cn(
-    "relative flex min-h-9 w-full min-w-0 items-center gap-2.5 overflow-hidden rounded-xl px-3 text-left text-sm font-medium outline-none",
+    "relative flex min-h-9 w-full min-w-0 items-center gap-2.5 overflow-hidden rounded-md px-3 text-left text-sm font-medium outline-none",
     "text-muted-foreground transition-colors hover:text-foreground",
     "focus-visible:bg-muted/70 focus-visible:ring-2 focus-visible:ring-ring",
-    isActive && "text-foreground",
+    isActive && "text-emerald-700 dark:text-emerald-300 font-semibold [&_svg]:text-emerald-600 dark:[&_svg]:text-emerald-400",
     disabled && "cursor-not-allowed opacity-40",
     className,
   );

@@ -1,19 +1,39 @@
-import { Moon, Sun } from "lucide-react";
-import { useState } from "react";
+"use client";
+
 import {
-  MobileNav,
-  MobileNavHeader,
-  MobileNavMenu,
-  MobileNavToggle,
-  NavBody,
-  NavItems,
-  Navbar,
-  NavbarButton,
-} from "@/components/ui/resizable-navbar";
+  BookOpen,
+  Briefcase,
+  FolderOpen,
+  GraduationCap,
+  Home,
+  Layers,
+  Mail,
+  Moon,
+  Sparkles,
+  Sun,
+  User,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import { Dock, DockItem, DockSeparator } from "@/components/motion/dock";
 
 interface Props {
   name: string;
   items: { name: string; link: string }[];
+}
+
+const ICON_MAP: Record<string, typeof Home> = {
+  about: User,
+  services: Layers,
+  experience: GraduationCap,
+  resources: FolderOpen,
+  blog: BookOpen,
+  contact: Mail,
+  work: Briefcase,
+};
+
+function getIcon(name: string) {
+  const key = name.toLowerCase();
+  return ICON_MAP[key] ?? Sparkles;
 }
 
 function toggleTheme() {
@@ -23,77 +43,142 @@ function toggleTheme() {
   } catch {}
 }
 
-function ThemeToggle() {
-  return (
-    <button
-      type="button"
-      onClick={toggleTheme}
-      aria-label="Toggle color theme"
-      className="relative z-20 grid size-10 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-    >
-      <Sun className="hidden size-4 dark:block" aria-hidden="true" />
-      <Moon className="size-4 dark:hidden" aria-hidden="true" />
-    </button>
-  );
-}
-
-function Brand({ name }: { name: string }) {
-  return (
-    <a href="/" className="relative z-20 px-2 py-1 text-sm font-semibold whitespace-nowrap text-foreground">
-      {name}
-    </a>
-  );
-}
-
 export function SiteNavbar({ name, items }: Props) {
-  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash;
+      const path = window.location.pathname;
+      if (path.startsWith("/resources")) return "/resources/";
+      if (path.startsWith("/blog")) return "/blog/";
+      if (hash) return `/${hash}`;
+      return "/";
+    }
+    return "/";
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleLocation = () => {
+      const hash = window.location.hash;
+      const path = window.location.pathname;
+      if (path.startsWith("/resources")) {
+        setActive("/resources/");
+      } else if (path.startsWith("/blog")) {
+        setActive("/blog/");
+      } else if (hash) {
+        setActive(`/${hash}`);
+      } else if (path === "/" || path === "") {
+        setActive("/");
+      }
+    };
+
+    window.addEventListener("hashchange", handleLocation);
+    window.addEventListener("popstate", handleLocation);
+
+    // Scroll spy for sections on home page
+    if (window.location.pathname === "/" || window.location.pathname === "") {
+      const sectionIds = ["about", "services", "experience", "contact"];
+      const sections = sectionIds
+        .map((id) => document.getElementById(id))
+        .filter(Boolean) as HTMLElement[];
+
+      if (sections.length > 0) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            const visible = entries.find((e) => e.isIntersecting);
+            if (visible) {
+              setActive(`/#${visible.target.id}`);
+            }
+          },
+          { rootMargin: "-25% 0px -60% 0px" },
+        );
+
+        for (const el of sections) observer.observe(el);
+
+        return () => {
+          observer.disconnect();
+          window.removeEventListener("hashchange", handleLocation);
+          window.removeEventListener("popstate", handleLocation);
+        };
+      }
+    }
+
+    return () => {
+      window.removeEventListener("hashchange", handleLocation);
+      window.removeEventListener("popstate", handleLocation);
+    };
+  }, []);
 
   return (
-    <Navbar className="top-[max(1rem,env(safe-area-inset-top))]">
-      <NavBody className="max-w-6xl">
-        <Brand name={name} />
-        <NavItems items={items} />
-        <div className="relative z-20 flex items-center gap-1">
-          <ThemeToggle />
-          <NavbarButton
-            href="/#contact"
-            variant="dark"
-            className="rounded-full bg-primary px-4 font-medium text-primary-foreground"
+    <header className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] inset-x-0 z-50 flex justify-center pointer-events-none px-3 sm:px-4">
+      <div className="pointer-events-auto max-w-full">
+        <Dock size={40}>
+          {/* Home */}
+          <DockItem
+            href="/"
+            aria-label="Home"
+            active={active === "/"}
+            onClick={() => setActive("/")}
+            className="md:px-3.5"
           >
-            Get in touch
-          </NavbarButton>
-        </div>
-      </NavBody>
+            <Home className="size-4 shrink-0" aria-hidden="true" />
+            <span className="hidden md:inline font-medium">Home</span>
+          </DockItem>
 
-      <MobileNav>
-        <MobileNavHeader>
-          <Brand name={name} />
-          <div className="flex items-center gap-1">
-            <ThemeToggle />
-            <MobileNavToggle isOpen={open} onClick={() => setOpen((value) => !value)} />
-          </div>
-        </MobileNavHeader>
-        <MobileNavMenu isOpen={open} onClose={() => setOpen(false)}>
-          {items.map((item) => (
-            <a
-              key={item.link}
-              href={item.link}
-              onClick={() => setOpen(false)}
-              className="flex h-11 w-full items-center text-base text-foreground"
-            >
-              {item.name}
-            </a>
-          ))}
-          <NavbarButton
+          <DockSeparator />
+
+          {/* Nav Items */}
+          {items.map((item) => {
+            const Icon = getIcon(item.name);
+            const isItemActive =
+              active === item.link ||
+              (item.link.startsWith("/#") && active === item.link);
+
+            return (
+              <DockItem
+                key={item.link}
+                href={item.link}
+                aria-label={item.name}
+                active={isItemActive}
+                onClick={() => setActive(item.link)}
+                className="md:px-3.5"
+              >
+                <Icon className="size-4 shrink-0" aria-hidden="true" />
+                <span className="hidden md:inline font-medium">
+                  {item.name}
+                </span>
+              </DockItem>
+            );
+          })}
+
+          <DockSeparator />
+
+          {/* Contact */}
+          <DockItem
             href="/#contact"
-            onClick={() => setOpen(false)}
-            variant="dark"
-            className="w-full rounded-full bg-primary py-3 font-medium text-primary-foreground"
+            aria-label="Contact"
+            active={active === "/#contact"}
+            onClick={() => setActive("/#contact")}
+            className="md:px-3.5"
           >
-            Get in touch
-          </NavbarButton>
-        </MobileNavMenu>
-      </MobileNav>
-    </Navbar>
+            <Mail className="size-4 shrink-0" aria-hidden="true" />
+            <span className="hidden md:inline font-medium">Contact</span>
+          </DockItem>
+
+          {/* Theme Toggle */}
+          <DockItem
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            title="Toggle theme"
+            showTooltipOnDesktop
+            className="size-10 px-0"
+          >
+            <Sun className="hidden size-4 dark:block shrink-0" aria-hidden="true" />
+            <Moon className="size-4 dark:hidden shrink-0" aria-hidden="true" />
+          </DockItem>
+        </Dock>
+      </div>
+    </header>
   );
 }

@@ -1,8 +1,10 @@
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Toaster } from "@/components/ui/sonner";
 import { authClient } from "@/lib/auth-client";
 
 type Mode = "sign-in" | "sign-up";
@@ -39,6 +41,23 @@ export function AuthForm({ mode }: { mode: Mode }) {
 	const [error, setError] = useState<string | null>(null);
 	const [showPassword, setShowPassword] = useState(false);
 
+	useEffect(() => {
+		try {
+			const stored = sessionStorage.getItem("auth_toast");
+			if (stored) {
+				sessionStorage.removeItem("auth_toast");
+				const parsed = JSON.parse(stored);
+				if (parsed?.type === "success") {
+					toast.success(parsed.message || "Signed out successfully.");
+				} else if (parsed?.type === "error") {
+					toast.error(parsed.message || "An error occurred.");
+				} else if (parsed?.message) {
+					toast(parsed.message);
+				}
+			}
+		} catch {}
+	}, []);
+
 	async function onSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		const data = new FormData(event.currentTarget);
@@ -50,12 +69,25 @@ export function AuthForm({ mode }: { mode: Mode }) {
 
 		const callbacks = {
 			onSuccess: () => {
+				try {
+					sessionStorage.setItem(
+						"auth_toast",
+						JSON.stringify({
+							type: "success",
+							message:
+								mode === "sign-in"
+									? "Signed in successfully. Welcome back!"
+									: "Account created successfully. Welcome!",
+						}),
+					);
+				} catch {}
 				window.location.href = "/dashboard";
 			},
 			onError: (ctx: { error: { message?: string } }) => {
-				setError(
-					ctx.error.message || "Something went wrong. Please try again.",
-				);
+				const msg =
+					ctx.error.message || "Something went wrong. Please try again.";
+				setError(msg);
+				toast.error(msg);
 			},
 		};
 
@@ -69,7 +101,9 @@ export function AuthForm({ mode }: { mode: Mode }) {
 				);
 			}
 		} catch {
-			setError("Could not reach the server. Please try again.");
+			const msg = "Could not reach the server. Please try again.";
+			setError(msg);
+			toast.error(msg);
 		} finally {
 			setPending(false);
 		}
@@ -193,6 +227,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
 					{text.switchLabel}
 				</a>
 			</p>
+			<Toaster position="bottom-right" />
 		</div>
 	);
 }

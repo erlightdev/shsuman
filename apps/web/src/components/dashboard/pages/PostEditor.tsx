@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { orpc } from "@/lib/orpc";
+import { cn } from "@/lib/utils";
 
 import { ConfirmDialog } from "../ConfirmDialog";
 import { parseTags, TextField, toDateInput } from "../fields";
@@ -237,11 +238,21 @@ export function PostEditor({ slug }: { slug: string }) {
         </div>
       )}
 
-      <div className="sticky bottom-4 flex items-center justify-end gap-3 rounded-2xl border border-border bg-background/90 p-3 shadow-sm backdrop-blur">
-        <p className="mr-auto pl-2 text-sm text-muted-foreground">{form?.draft ? "Saved as draft" : "Visible on the website"}</p>
-        <Button type="submit" className="rounded-full" disabled={saving || !form}>
+      <div className="sticky bottom-4 flex items-center justify-end gap-3 rounded-2xl border border-border bg-background/90 p-3 shadow-md backdrop-blur">
+        <p className="mr-auto pl-2 text-sm flex items-center gap-2">
+          <span className={cn("size-2 rounded-full", form?.draft ? "bg-amber-500" : "bg-emerald-500 animate-pulse")} />
+          <span className="text-muted-foreground">{form?.draft ? "Saved as draft" : "Visible on the website"}</span>
+        </p>
+        <Button
+          type="submit"
+          className={cn(
+            "rounded-full transition-all",
+            !form?.draft && "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-500/20"
+          )}
+          disabled={saving || !form}
+        >
           {saving && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
-          {form?.draft ? "Save draft" : isNew ? "Publish" : "Save changes"}
+          {form?.draft ? "Save draft" : isNew ? "Publish post" : "Save changes"}
         </Button>
       </div>
     </form>

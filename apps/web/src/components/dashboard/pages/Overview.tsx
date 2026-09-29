@@ -75,13 +75,23 @@ export function Overview() {
             ))
           : cards.map((card) => (
               <li key={card.label}>
-                <a href={card.href} className="group block rounded-2xl border border-border bg-card p-5 transition-colors hover:border-foreground/20">
-                  <div className="flex items-center justify-between text-muted-foreground">
-                    <span className="text-sm">{card.label}</span>
-                    <card.icon className="size-4" aria-hidden="true" />
+                <a
+                  href={card.href}
+                  className="group relative block overflow-hidden rounded-2xl border border-border bg-card p-5 transition-all hover:border-emerald-500/40 hover:shadow-md hover:shadow-emerald-500/5 hover:-translate-y-0.5"
+                >
+                  <div className="flex items-center justify-between text-muted-foreground group-hover:text-foreground">
+                    <span className="text-sm font-medium">{card.label}</span>
+                    <span className="grid size-7 place-items-center rounded-lg bg-brand-8 text-emerald-600 dark:text-emerald-400 group-hover:bg-brand-20 transition-colors">
+                      <card.icon className="size-4" aria-hidden="true" />
+                    </span>
                   </div>
-                  <p className="mt-3 text-3xl font-semibold tabular-nums text-foreground">{card.value}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{card.hint}</p>
+                  <p className="mt-3 text-3xl font-semibold tabular-nums text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">
+                    {card.value}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground flex items-center justify-between">
+                    <span>{card.hint}</span>
+                    <ArrowUpRight className="size-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 text-emerald-600 dark:text-emerald-400 transition-all" />
+                  </p>
                 </a>
               </li>
             ))}
@@ -100,13 +110,19 @@ export function Overview() {
           <ul className="divide-y divide-border">
             {recent.map((item) => (
               <li key={`${item.kind}-${item.href}`}>
-                <a href={item.href} className="flex items-center gap-4 px-5 py-3 text-sm hover:bg-muted/60">
-                  <span className="w-20 shrink-0 text-muted-foreground">{item.kind}</span>
-                  <span className="min-w-0 flex-1 truncate font-medium text-foreground capitalize">{item.title}</span>
-                  <time className="shrink-0 tabular-nums text-muted-foreground" dateTime={item.at.toISOString()}>
+                <a href={item.href} className="group flex items-center gap-4 px-5 py-3.5 text-sm transition-colors hover:bg-brand-8/50">
+                  <span className="w-20 shrink-0">
+                    <span className="inline-block rounded-md bg-brand-8 px-2 py-0.5 text-xs font-mono font-medium text-emerald-700 dark:text-emerald-300">
+                      {item.kind}
+                    </span>
+                  </span>
+                  <span className="min-w-0 flex-1 truncate font-medium text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors capitalize">
+                    {item.title}
+                  </span>
+                  <time className="shrink-0 tabular-nums text-xs text-muted-foreground" dateTime={item.at.toISOString()}>
                     {item.at.toLocaleDateString()}
                   </time>
-                  <ArrowUpRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  <ArrowUpRight className="size-4 shrink-0 text-muted-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" aria-hidden="true" />
                 </a>
               </li>
             ))}

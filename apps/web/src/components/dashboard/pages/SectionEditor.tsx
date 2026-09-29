@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { orpc } from "@/lib/orpc";
+import { cn } from "@/lib/utils";
 
 import { ConfirmDialog } from "../ConfirmDialog";
 import { errorMessage, useLoader } from "../hooks";
@@ -65,7 +66,7 @@ export function SectionEditor({ section }: { section: string }) {
       const next = (await orpc.content.update({ section: key, data: parsed.data as Record<string, unknown> })) as Record<string, unknown>;
       setValue(next);
       setSaved(JSON.stringify(next));
-      toast.success(`${meta.label} saved. The website updates within a minute.`);
+      toast.success(`${meta.label} saved.`);
     } catch (err) {
       toast.error(errorMessage(err));
     } finally {
@@ -79,7 +80,7 @@ export function SectionEditor({ section }: { section: string }) {
       setValue(next);
       setSaved(JSON.stringify(next));
       setErrors({});
-      toast.success(`${meta.label} restored to default.`);
+      toast.success(`${meta.label} reset.`);
     } catch (err) {
       toast.error(errorMessage(err));
     }
@@ -142,12 +143,22 @@ export function SectionEditor({ section }: { section: string }) {
         </div>
       )}
 
-      <div className="sticky bottom-4 flex items-center justify-end gap-3 rounded-2xl border border-border bg-background/90 p-3 shadow-sm backdrop-blur">
-        <p className="mr-auto pl-2 text-sm text-muted-foreground">{dirty ? "Unsaved changes" : "All changes saved"}</p>
+      <div className="sticky bottom-4 flex items-center justify-end gap-3 rounded-2xl border border-border bg-background/90 p-3 shadow-md backdrop-blur">
+        <p className="mr-auto pl-2 text-sm flex items-center gap-2">
+          <span className={cn("size-2 rounded-full", dirty ? "bg-amber-500 animate-pulse" : "bg-emerald-500")} />
+          <span className="text-muted-foreground">{dirty ? "Unsaved changes" : "All changes saved"}</span>
+        </p>
         <Button type="button" variant="ghost" className="rounded-full" disabled={!dirty || saving} onClick={() => setValue(JSON.parse(saved))}>
           Discard
         </Button>
-        <Button type="submit" className="rounded-full" disabled={!dirty || saving}>
+        <Button
+          type="submit"
+          className={cn(
+            "rounded-full transition-all",
+            dirty && "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-500/20"
+          )}
+          disabled={!dirty || saving}
+        >
           {saving && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
           Save changes
         </Button>

@@ -29,7 +29,7 @@ interface Props {
 /** Shared list view for blog posts and resources. */
 export function ItemTable({ title, description, noun, basePath, publicPath, rows, loading }: Props) {
   const newButton = (
-    <Button asChild className="rounded-full">
+    <Button asChild className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-500/20 transition-all">
       <a href={`${basePath}/new`}>
         <Plus className="size-4" aria-hidden="true" />
         New {noun}
@@ -75,7 +75,7 @@ export function ItemTable({ title, description, noun, basePath, publicPath, rows
                     </TableCell>
                     <TableCell className="hidden text-muted-foreground sm:table-cell">{row.category}</TableCell>
                     <TableCell>
-                      <Badge variant={row.draft ? "outline" : "secondary"} className="rounded-full">
+                      <Badge variant={row.draft ? "outline" : scheduled ? "secondary" : "brand"} className="rounded-full">
                         {row.draft ? "Draft" : scheduled ? "Scheduled" : "Published"}
                       </Badge>
                     </TableCell>

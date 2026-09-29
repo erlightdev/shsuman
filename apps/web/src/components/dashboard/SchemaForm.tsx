@@ -360,7 +360,7 @@ function ArrayField({ name, path, schema, value, onChange, errors }: FieldProps)
         type="button"
         variant="outline"
         size="sm"
-        className="rounded-full"
+        className="rounded-full transition-colors hover:border-emerald-500/40 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-brand-8/50"
         disabled={!canAdd}
         onClick={() => {
           onChange([...list, emptyFor(itemSchema)]);

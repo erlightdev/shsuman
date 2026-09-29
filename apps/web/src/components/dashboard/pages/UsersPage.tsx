@@ -67,7 +67,7 @@ function CreateUser({ onCreated }: { onCreated: () => void }) {
 
   if (!open) {
     return (
-      <Button className="rounded-full" onClick={() => setOpen(true)}>
+      <Button className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-500/20 transition-all" onClick={() => setOpen(true)}>
         <Plus className="size-4" aria-hidden="true" />
         Add user
       </Button>
@@ -107,7 +107,7 @@ function CreateUser({ onCreated }: { onCreated: () => void }) {
         <Button type="button" variant="ghost" className="rounded-full" onClick={() => setOpen(false)}>
           Cancel
         </Button>
-        <Button type="submit" className="rounded-full" disabled={pending}>
+        <Button type="submit" className="rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-500/20" disabled={pending}>
           {pending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
           Create user
         </Button>
@@ -173,7 +173,10 @@ export function UsersPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        <Badge variant={role === "user" ? "outline" : "secondary"} className="rounded-full capitalize">
+                        <Badge
+                          variant={role === "admin" ? "brand" : role === "editor" ? "secondary" : "outline"}
+                          className="rounded-full capitalize"
+                        >
                           {role}
                         </Badge>
                         {user.banned && (
