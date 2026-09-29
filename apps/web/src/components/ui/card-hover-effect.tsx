@@ -1,3 +1,4 @@
+import { type Accent, accentFor, accentStyles } from "@/lib/accents";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "motion/react";
 
@@ -12,6 +13,7 @@ export const HoverEffect = ({
     description: string;
     link?: string;
     tags?: string[];
+    accent?: Accent;
   }[];
   className?: string;
 }) => {
@@ -48,7 +50,7 @@ export const HoverEffect = ({
               />
             )}
           </AnimatePresence>
-          <Card>
+          <Card accent={accentFor(item.accent, idx)}>
             <CardTitle>{item.title}</CardTitle>
             <CardDescription>{item.description}</CardDescription>
             {item.tags && (
@@ -68,17 +70,40 @@ export const HoverEffect = ({
 export const Card = ({
   className,
   children,
+  accent,
 }: {
   className?: string;
   children: React.ReactNode;
+  accent?: Accent;
 }) => {
+  const styles = accent ? accentStyles(accent) : null;
   return (
     <div
+      style={styles?.vars}
       className={cn(
-        "rounded-2xl h-full w-full p-2 overflow-hidden bg-background border border-border group-hover:border-foreground/20 relative z-20",
+        "rounded-2xl h-full w-full p-2 overflow-hidden bg-background border border-border group-hover:border-foreground/20 relative z-20 [--accent-line:0.22] dark:[--accent-line:0.28]",
         className
       )}
     >
+      {styles && (
+        <>
+          {/* Soft color wash from the top-right corner */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_90%_at_100%_0%,hsl(var(--accent-hue)/0.12),transparent_60%)] dark:bg-[radial-gradient(120%_90%_at_100%_0%,hsl(var(--accent-hue)/0.16),transparent_60%)]"
+          />
+          {/* Pattern, faded out toward the text */}
+          <div
+            aria-hidden="true"
+            style={styles.pattern}
+            className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(90%_75%_at_100%_0%,#000,transparent_70%)] transition-opacity duration-200 group-hover:opacity-100 opacity-80"
+          />
+          <span
+            aria-hidden="true"
+            className="absolute top-6 right-6 size-2 rounded-full bg-[hsl(var(--accent-hue))] ring-4 ring-[hsl(var(--accent-hue)/0.15)]"
+          />
+        </>
+      )}
       <div className="relative z-50">
         <div className="p-4">{children}</div>
       </div>

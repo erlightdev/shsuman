@@ -1,0 +1,20 @@
+---
+import type { SiteContent } from "@shsuman/api/content/schema";
+import { AwardsCarousel } from "./AwardsCarousel";
+
+interface Props {
+  awards: SiteContent["awards"];
+  credentials?: SiteContent["credentials"];
+}
+
+const { awards, credentials } = Astro.props;
+---
+
+<!-- Recognition — Dynamic Professional Certifications and Industry Honors -->
+<section id="awards" aria-labelledby="awards-title" class="border-t border-border-line py-24 sm:py-32">
+  <div class="container-site">
+    <AwardsCarousel client:visible awards={awards} credentials={credentials} />
+  </div>
+</section>
+
+

@@ -87,18 +87,21 @@ export const defaultContent: SiteContent = {
         description:
           "Defined and executed company vision aligned with cybersecurity and IT best practices. Managed daily operations and resource allocation, ran risk assessments and implemented mitigation strategies.",
         tags: ["Strategy", "Risk management", "Compliance"],
+        accent: "amber",
       },
       {
         title: "Enterprise client solutions",
         description:
           "Strategic guidance on infrastructure and software procurement for government, banking, insurance, aviation and education clients.",
         tags: ["Government", "Banking", "Education", "Enterprise"],
+        accent: "sky",
       },
       {
         title: "Training & knowledge sharing",
         description:
           "Delivered cybersecurity training initiatives through team supervision, knowledge sharing, leadership and technical documentation across multiple organizations.",
         tags: ["Training", "Cybersecurity", "Documentation"],
+        accent: "emerald",
       },
     ],
   },
@@ -204,6 +207,47 @@ export const defaultContent: SiteContent = {
       "IS/IT audit, risk management & compliance",
       "Technical & financial management",
       "Problem solving & collaboration",
+    ],
+  },
+  awards: {
+    title: "Certifications & industry honors.",
+    lead: "Professional accreditations, audit credentials, and leadership awards across cybersecurity and digital governance.",
+    certifications: [
+      {
+        name: "Information Security & IT Audit Specialist",
+        issuer: "ISACA / Industry Accredited",
+        year: "2018",
+        credentialId: "IS-AUD-2018-NP",
+        badge: "Audit & Risk",
+      },
+      {
+        name: "Certified Network Security Specialist (CNSS)",
+        issuer: "ICSI (International CyberSecurity Institute)",
+        year: "2020",
+        credentialId: "CNSS-74921",
+        badge: "Security",
+      },
+      {
+        name: "Cisco Certified Network Associate (CCNA)",
+        issuer: "Cisco Systems",
+        year: "2013",
+        credentialId: "CCNA-SEC-NP",
+        badge: "Networking",
+      },
+    ],
+    awards: [
+      {
+        title: "Cybersecurity Leadership & Community Excellence Award",
+        issuer: "npCert (Information Security Response Team Nepal)",
+        year: "2022",
+        description: "Recognized for executive leadership, policy contribution and IS/IT training initiatives across Nepal.",
+      },
+      {
+        title: "Outstanding Contribution to Open Internet in Nepal",
+        issuer: "Internet Society (ISOC) Nepal Chapter",
+        year: "2019",
+        description: "Honored for founding board leadership and dedicated advocacy in digital governance and tech policy.",
+      },
     ],
   },
   blog: {

@@ -78,7 +78,7 @@ export function SiteNavbar({ name, items }: Props) {
 
     // Scroll spy for sections on home page
     if (window.location.pathname === "/" || window.location.pathname === "") {
-      const sectionIds = ["about", "services", "experience", "contact"];
+      const sectionIds = ["about", "services", "work", "experience", "credentials", "awards", "contact"];
       const sections = sectionIds
         .map((id) => document.getElementById(id))
         .filter(Boolean) as HTMLElement[];

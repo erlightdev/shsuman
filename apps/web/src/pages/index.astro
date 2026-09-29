@@ -1,6 +1,7 @@
 ---
 import { SiteNavbar } from "@/components/layout/SiteNavbar";
 import About from "@/components/sections/About.astro";
+import Awards from "@/components/sections/Awards.astro";
 import BlogPreview from "@/components/sections/BlogPreview.astro";
 import Contact from "@/components/sections/Contact.astro";
 import Credentials from "@/components/sections/Credentials.astro";
@@ -15,7 +16,7 @@ import Layout from "@/layouts/Layout.astro";
 export const prerender = false;
 
 const [content, posts] = await Promise.all([getContent(), getPosts()]);
-const { profile, about, credentials, contact, seo } = content;
+const { profile, about, credentials, awards, contact, seo } = content;
 setPublicCache(Astro.response.headers);
 
 const structuredData = {
@@ -40,11 +41,18 @@ const structuredData = {
 			"@type": "CollegeOrUniversity",
 			name: item.school,
 		})),
-		hasCredential: credentials.education.map((item) => ({
-			"@type": "EducationalOccupationalCredential",
-			name: item.degree,
-			recognizedBy: { "@type": "CollegeOrUniversity", name: item.school },
-		})),
+		hasCredential: [
+			...credentials.education.map((item) => ({
+				"@type": "EducationalOccupationalCredential",
+				name: item.degree,
+				recognizedBy: { "@type": "CollegeOrUniversity", name: item.school },
+			})),
+			...(awards.certifications ?? []).map((cert) => ({
+				"@type": "EducationalOccupationalCredential",
+				name: cert.name,
+				recognizedBy: { "@type": "Organization", name: cert.issuer },
+			})),
+		],
 		memberOf: credentials.community.map((item) => ({
 			"@type": "OrganizationRole",
 			roleName: item.role,
@@ -85,6 +93,7 @@ const structuredData = {
     <Work work={content.work} />
     <Experience experience={content.experience} />
     <Credentials credentials={credentials} />
+    <Awards awards={awards} credentials={credentials} />
     <BlogPreview blog={content.blog} posts={posts} />
     <Contact contact={contact} footer={content.footer} name={profile.name} />
   </main>

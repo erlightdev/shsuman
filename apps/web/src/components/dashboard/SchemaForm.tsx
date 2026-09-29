@@ -51,6 +51,10 @@ const LABELS: Record<string, string> = {
   blurb: "Footer text",
   note: "Copyright note",
   href: "Link",
+  issuer: "Issuing body / Organization",
+  credentialId: "Credential ID / License (optional)",
+  school: "School / Institution",
+  degree: "Degree / Qualification",
 };
 
 const MARKDOWN_FIELDS = new Set(["blurb"]);

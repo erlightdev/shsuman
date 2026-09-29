@@ -1,5 +1,6 @@
 import type { ICONS } from "@shsuman/api/content/schema";
 import {
+  Award,
   BookOpen,
   Briefcase,
   Cloud,
@@ -23,6 +24,7 @@ export const contentIcons: Record<(typeof ICONS)[number], LucideIcon> = {
   briefcase: Briefcase,
   landmark: Landmark,
   "graduation-cap": GraduationCap,
+  award: Award,
   network: Network,
   server: Server,
   lock: Lock,

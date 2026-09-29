@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { createResource, deleteResource, getResource, listResources, updateResource } from "../content/resources";
 import {
+  ACCENTS,
   blogPostInput,
   blogPostPatch,
   COVERS,
@@ -112,10 +113,10 @@ export const MCP_TOOLS: ToolDef[] = [
   {
     name: "list_icons",
     title: "List icons and covers",
-    description: "List allowed icon names for services, blog cover styles and resource types.",
+    description: "List allowed icon names for services, accent colors for work cards, blog cover styles and resource types.",
     input: {},
     readOnly: true,
-    run: async () => ({ icons: ICONS, blogCovers: COVERS, resourceTypes: RESOURCE_TYPES }),
+    run: async () => ({ icons: ICONS, accents: ACCENTS, blogCovers: COVERS, resourceTypes: RESOURCE_TYPES }),
   },
 
   /* Blog */

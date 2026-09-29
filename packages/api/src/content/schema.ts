@@ -11,6 +11,7 @@ export const ICONS = [
   "briefcase",
   "landmark",
   "graduation-cap",
+  "award",
   "network",
   "server",
   "lock",
@@ -83,9 +84,20 @@ export const servicesSection = z.strictObject({
   clients: list(z.strictObject({ name: line(80), sector: line(40) }), 20),
 });
 
+/** Card tints for the work section; each maps to a fixed color + pattern in the UI. */
+export const ACCENTS = ["amber", "sky", "emerald", "violet", "rose"] as const;
+
 export const workSection = z.strictObject({
   title: line(120),
-  items: list(z.strictObject({ title: line(100), description: para(500), tags: z.array(line(30)).max(6) }), 9),
+  items: list(
+    z.strictObject({
+      title: line(100),
+      description: para(500),
+      tags: z.array(line(30)).max(6),
+      accent: z.enum(ACCENTS).optional(),
+    }),
+    9,
+  ),
 });
 
 export const experienceSection = z.strictObject({
@@ -106,9 +118,33 @@ export const experienceSection = z.strictObject({
 
 export const credentialsSection = z.strictObject({
   title: line(120),
-  education: list(z.strictObject({ degree: line(120), school: line(120), location: line(80), year: line(10) }), 8),
+  education: list(z.strictObject({ degree: line(120), school: line(120), location: line(80), year: line(20) }), 8),
   community: list(z.strictObject({ role: line(80), org: line(120), detail: line(160), logoUrl: url }), 12),
   skills: list(line(80), 12),
+});
+
+export const awardsSection = z.strictObject({
+  title: line(120),
+  lead: para(300),
+  certifications: list(
+    z.strictObject({
+      name: line(120),
+      issuer: line(120),
+      year: line(20),
+      credentialId: z.string().trim().max(120).optional(),
+      badge: z.string().trim().max(60).optional(),
+    }),
+    12,
+  ),
+  awards: list(
+    z.strictObject({
+      title: line(120),
+      issuer: line(120),
+      year: line(20),
+      description: para(400),
+    }),
+    12,
+  ),
 });
 
 export const blogSection = z.strictObject({
@@ -146,6 +182,7 @@ export const sectionSchemas = {
   work: workSection,
   experience: experienceSection,
   credentials: credentialsSection,
+  awards: awardsSection,
   blog: blogSection,
   contact: contactSection,
   footer: footerSection,
@@ -166,6 +203,7 @@ export const SECTION_LABELS: Record<SectionKey, { label: string; description: st
   work: { label: "Key implementations", description: "Highlighted work items." },
   experience: { label: "Experience", description: "Career timeline." },
   credentials: { label: "Credentials", description: "Education, community roles and skills." },
+  awards: { label: "Awards & Certifications", description: "Professional certifications and honors." },
   blog: { label: "Blog section", description: "Heading for the homepage blog preview." },
   contact: { label: "Contact", description: "Contact heading, email and links." },
   footer: { label: "Footer", description: "Footer text, links and copyright note." },
