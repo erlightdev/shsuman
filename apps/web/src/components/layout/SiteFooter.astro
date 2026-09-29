@@ -1,0 +1,38 @@
+---
+import type { SiteContent } from "@shsuman/api/content/schema";
+import Icon from "@/components/common/Icon.astro";
+import { renderMarkdown } from "@/lib/markdown";
+
+interface Props {
+  footer: SiteContent["footer"];
+  name: string;
+}
+
+const { footer, name } = Astro.props;
+const blurb = footer.blurb ? renderMarkdown(footer.blurb).html : "";
+---
+
+<footer class="border-t border-border-line py-12 pb-[max(3rem,env(safe-area-inset-bottom))]">
+  <div class="container-site grid gap-8 text-sm text-foreground-tertiary sm:grid-cols-[1fr_auto] sm:items-end">
+    <div class="max-w-md">
+      <p class="font-semibold text-foreground-primary">{name}</p>
+      {blurb && <div class="footer-blurb mt-2 leading-6" set:html={blurb} />}
+      <p class="mt-6">&copy; {new Date().getFullYear()} {name}. {footer.note}</p>
+    </div>
+    <nav aria-label="Footer" class="flex flex-wrap items-center gap-x-6 gap-y-2">
+      {footer.links.map((link) => (
+        <a href={link.href} class="hover:text-foreground-primary">{link.label}</a>
+      ))}
+      <a href="#" class="inline-flex items-center gap-1.5 hover:text-foreground-primary">
+        Back to top
+        <Icon name="arrow-up" class="size-3.5" />
+      </a>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .footer-blurb :global(p + p) { margin-top: 0.5rem; }
+  .footer-blurb :global(a) { color: var(--fg-primary); text-decoration: underline; text-underline-offset: 3px; }
+  .footer-blurb :global(strong) { color: var(--fg-primary); font-weight: 500; }
+</style>

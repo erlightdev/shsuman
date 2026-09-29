@@ -1,0 +1,27 @@
+---
+import type { SiteContent } from "@shsuman/api/content/schema";
+import SectionHeader from "@/components/common/SectionHeader.astro";
+import { ExperienceTimeline } from "./ExperienceTimeline";
+
+interface Props {
+  experience: SiteContent["experience"];
+}
+
+const { experience } = Astro.props;
+---
+
+<!-- Experience — Aceternity Timeline -->
+<section id="experience" aria-labelledby="experience-title" class="border-t border-border-line py-24 sm:py-32">
+  <div class="container-site">
+    <SectionHeader
+      id="experience-title"
+      index="04"
+      label="Experience"
+      title={experience.title}
+      lead={experience.lead}
+    />
+    <div class="mt-16">
+      <ExperienceTimeline client:visible jobs={experience.jobs} />
+    </div>
+  </div>
+</section>

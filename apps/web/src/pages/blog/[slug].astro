@@ -1,0 +1,147 @@
+---
+import BlogCard from "@/components/blog/BlogCard.astro";
+import BlogCover from "@/components/blog/BlogCover.astro";
+import Icon from "@/components/common/Icon.astro";
+import Contact from "@/components/sections/Contact.astro";
+import { SiteNavbar } from "@/components/layout/SiteNavbar";
+import { getContent, getPost, getPosts, setPublicCache } from "@/lib/content";
+import { formatDate, readingTime, renderMarkdown } from "@/lib/markdown";
+import { nav, SITE_URL } from "@/lib/site";
+import Layout from "@/layouts/Layout.astro";
+
+export const prerender = false;
+
+const slug = Astro.params.slug ?? "";
+const [content, post, posts] = await Promise.all([getContent(), getPost(slug), getPosts()]);
+if (!post) return Astro.rewrite("/404");
+setPublicCache(Astro.response.headers);
+
+const { profile, footer, contact } = content;
+const { title, description, category, tags, cover, coverImage, body } = post;
+const publishedAt = new Date(post.publishedAt);
+const updatedAt = new Date(post.updatedAt);
+const { html, headings } = renderMarkdown(body);
+const toc = headings.filter((heading) => heading.depth === 2);
+const url = `${SITE_URL}/blog/${post.slug}/`;
+const related = posts.filter((item) => item.slug !== post.slug).slice(0, 3);
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "@id": `${url}#article`,
+      headline: title,
+      description,
+      url,
+      mainEntityOfPage: url,
+      datePublished: publishedAt.toISOString(),
+      dateModified: updatedAt.toISOString(),
+      articleSection: category,
+      keywords: tags.join(", "),
+      inLanguage: "en",
+      ...(coverImage ? { image: coverImage } : {}),
+      author: { "@type": "Person", "@id": `${SITE_URL}/#person`, name: profile.name, url: SITE_URL },
+      publisher: { "@type": "Person", "@id": `${SITE_URL}/#person`, name: profile.name },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+        { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog/` },
+        { "@type": "ListItem", position: 3, name: title, item: url },
+      ],
+    },
+  ],
+};
+---
+
+<Layout
+  title={`${title} — ${profile.name}`}
+  description={description}
+  image={coverImage ?? undefined}
+  siteName={profile.name}
+  type="article"
+  publishedTime={publishedAt}
+  modifiedTime={updatedAt}
+  structuredData={structuredData}
+>
+  <SiteNavbar client:load name={profile.name} items={nav.map((item) => ({ name: item.label, link: item.href }))} />
+
+  <main id="main" class="pt-32 pb-24 sm:pt-40 sm:pb-32">
+    <article>
+      <header class="container-site max-w-3xl">
+        <nav aria-label="Breadcrumb">
+          <a href="/blog/" class="inline-flex items-center gap-2 text-sm text-foreground-tertiary hover:text-foreground-primary">
+            <Icon name="arrow-up" class="size-4 -rotate-90" />
+            All articles
+          </a>
+        </nav>
+        <p class="mt-10 font-mono text-xs uppercase text-foreground-tertiary">{category}</p>
+        <h1 class="mt-4 text-4xl leading-tight font-semibold sm:text-5xl">{title}</h1>
+        <p class="mt-5 text-lg leading-8 text-foreground-secondary">{description}</p>
+        <p class="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-foreground-tertiary">
+          <span class="font-medium text-foreground-primary">{profile.name}</span>
+          <span aria-hidden="true">·</span>
+          <time datetime={publishedAt.toISOString()}>{formatDate(publishedAt)}</time>
+          <span aria-hidden="true">·</span>
+          <span>{readingTime(body)}</span>
+        </p>
+      </header>
+
+      <div class="container-site mt-12 max-w-5xl">
+        <div class="rounded-[1.75rem] border border-border p-3">
+          {coverImage ? (
+            <img src={coverImage} alt="" class="aspect-[21/9] w-full rounded-[1.25rem] object-cover" />
+          ) : (
+            <BlogCover variant={cover as "rings" | "wave" | "fan"} class="aspect-[21/9] rounded-[1.25rem]" />
+          )}
+        </div>
+      </div>
+
+      <div class="container-site mt-16 grid max-w-5xl gap-12 lg:grid-cols-[1fr_14rem]">
+        <div class="prose-post min-w-0 max-w-3xl" set:html={html} />
+
+        {toc.length > 1 && (
+          <aside class="hidden lg:block">
+            <nav aria-label="On this page" class="sticky top-28">
+              <p class="eyebrow">On this page</p>
+              <ul class="mt-4 space-y-2 border-l border-border-line text-sm">
+                {toc.map((heading) => (
+                  <li>
+                    <a href={`#${heading.slug}`} class="-ml-px block border-l border-transparent pl-4 text-foreground-tertiary hover:border-foreground-primary hover:text-foreground-primary">
+                      {heading.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </aside>
+        )}
+      </div>
+
+      {tags.length > 0 && (
+        <footer class="container-site mt-12 max-w-5xl">
+          <ul class="flex max-w-3xl flex-wrap gap-2 border-t border-border-line pt-8" aria-label="Tags">
+            {tags.map((tag) => <li class="badge">{tag}</li>)}
+          </ul>
+        </footer>
+      )}
+    </article>
+
+    {related.length > 0 && (
+      <section aria-labelledby="related-title" class="container-site mt-24">
+        <h2 id="related-title" class="text-2xl font-semibold">More articles</h2>
+        <ul class="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {related.map((item) => (
+            <li>
+              <BlogCard post={item} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </main>
+
+  <Contact contact={contact} footer={footer} name={profile.name} />
+</Layout>

@@ -1,0 +1,71 @@
+---
+import BlogCard from "@/components/blog/BlogCard.astro";
+import Contact from "@/components/sections/Contact.astro";
+import { SiteNavbar } from "@/components/layout/SiteNavbar";
+import { getContent, getPosts, setPublicCache } from "@/lib/content";
+import { nav, SITE_URL } from "@/lib/site";
+import Layout from "@/layouts/Layout.astro";
+
+export const prerender = false;
+
+const [content, posts] = await Promise.all([getContent(), getPosts()]);
+const { profile, blog, footer, contact } = content;
+const categories = [...new Set(posts.map((post) => post.category))];
+setPublicCache(Astro.response.headers);
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "@id": `${SITE_URL}/blog/#blog`,
+  url: `${SITE_URL}/blog/`,
+  name: `${profile.name} — Blog`,
+  author: { "@type": "Person", "@id": `${SITE_URL}/#person`, name: profile.name },
+  blogPost: posts.map((post) => ({
+    "@type": "BlogPosting",
+    headline: post.title,
+    url: `${SITE_URL}/blog/${post.slug}/`,
+    datePublished: new Date(post.publishedAt).toISOString(),
+  })),
+};
+---
+
+<Layout
+  title={`Blog — ${profile.name}`}
+  description={`Articles by ${profile.name}: ${blog.lead}`}
+  siteName={profile.name}
+  structuredData={structuredData}
+>
+  <SiteNavbar client:load name={profile.name} items={nav.map((item) => ({ name: item.label, link: item.href }))} />
+
+  <main id="main" class="pt-36 pb-24 sm:pt-44 sm:pb-32">
+    <div class="container-site">
+      <header class="mx-auto max-w-2xl text-center">
+        <p class="eyebrow">Blog</p>
+        <h1 class="mt-4 text-4xl font-semibold sm:text-5xl">{blog.title}</h1>
+        <p class="mt-4 text-lg leading-8 text-foreground-secondary">{blog.lead}</p>
+        {categories.length > 1 && (
+          <ul class="mt-8 flex flex-wrap justify-center gap-2" aria-label="Topics">
+            {categories.map((category) => <li class="badge">{category}</li>)}
+          </ul>
+        )}
+      </header>
+
+      {posts.length ? (
+        <ul class="mt-16 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <li>
+              <BlogCard post={post} headingLevel="h2" />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div class="mx-auto mt-16 max-w-md rounded-3xl border border-border p-10 text-center">
+          <p class="font-medium text-foreground-primary">No articles yet.</p>
+          <a href="/" class="btn btn-outline mt-6">Back to home</a>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <Contact contact={contact} footer={footer} name={profile.name} />
+</Layout>

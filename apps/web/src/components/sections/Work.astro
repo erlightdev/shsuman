@@ -1,0 +1,19 @@
+---
+import type { SiteContent } from "@shsuman/api/content/schema";
+import SectionHeader from "@/components/common/SectionHeader.astro";
+import { HoverEffect } from "@/components/ui/card-hover-effect";
+
+interface Props {
+  work: SiteContent["work"];
+}
+
+const { work } = Astro.props;
+---
+
+<!-- Selected work — Aceternity Card Hover Effect -->
+<section id="work" aria-labelledby="work-title" class="border-t border-border-line py-24 sm:py-32">
+  <div class="container-site">
+    <SectionHeader id="work-title" index="03" label="Selected work" title={work.title} />
+    <HoverEffect client:visible items={work.items} className="-mx-2 mt-8 py-0" />
+  </div>
+</section>

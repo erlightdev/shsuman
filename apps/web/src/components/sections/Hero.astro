@@ -1,0 +1,104 @@
+---
+import type { SiteContent } from "@shsuman/api/content/schema";
+import Icon from "@/components/common/Icon.astro";
+import { NumberTicker } from "@/components/motion/number-ticker";
+import { LayoutTextFlip } from "@/components/ui/layout-text-flip";
+import { Spotlight } from "@/components/ui/spotlight-new";
+
+interface Props {
+  profile: SiteContent["profile"];
+  hero: SiteContent["hero"];
+}
+
+const { profile, hero } = Astro.props;
+
+const stats = hero.stats.map((stat) => {
+  const match = stat.value.match(/^(\d+)(\D*)$/);
+  return { ...stat, number: match ? Number(match[1]) : null, suffix: match?.[2] ?? "" };
+});
+
+const spotlight = {
+  gradientFirst:
+    "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(156, 72%, 60%, .08) 0, hsla(156, 72%, 45%, .02) 50%, hsla(156, 72%, 40%, 0) 80%)",
+  gradientSecond:
+    "radial-gradient(50% 50% at 50% 50%, hsla(156, 72%, 60%, .06) 0, hsla(156, 72%, 45%, .02) 80%, transparent 100%)",
+  gradientThird:
+    "radial-gradient(50% 50% at 50% 50%, hsla(156, 72%, 60%, .04) 0, hsla(156, 72%, 40%, .02) 80%, transparent 100%)",
+};
+---
+
+<!-- Hero — Aceternity Spotlight New + Layout Text Flip, beUI Number Ticker -->
+<section id="top" aria-labelledby="hero-title" class="relative overflow-hidden pt-32 pb-20 sm:pt-44 sm:pb-24">
+  <div aria-hidden="true" class="grid-backdrop pointer-events-none absolute inset-0 -z-10"></div>
+  <div class="pointer-events-none absolute inset-0 -z-10 hidden md:block">
+    <Spotlight client:idle {...spotlight} />
+  </div>
+
+  <div class="container-site grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
+    <div class="lg:col-span-7">
+      <p class="badge">
+        <span class="relative flex size-2">
+          <span class="absolute inset-0 rounded-full bg-brand-base opacity-40 motion-safe:animate-ping"></span>
+          <span class="relative size-2 rounded-full bg-brand-base"></span>
+        </span>
+        {profile.currentTitle}, {profile.currentCompany}
+      </p>
+
+      <h1 id="hero-title" class="mt-6 text-5xl font-semibold sm:text-6xl lg:text-7xl">{profile.name}</h1>
+
+      <p class="mt-5 font-serif text-2xl italic text-foreground-secondary sm:text-3xl">
+        <span class="sr-only">{profile.role}</span>
+        <span aria-hidden="true" class="flex flex-wrap items-center gap-x-2 gap-y-2">
+          <LayoutTextFlip client:load text={hero.flipPrefix} words={hero.flipWords} duration={2600} />
+        </span>
+      </p>
+
+      <p class="mt-6 max-w-xl text-base leading-7 text-foreground-secondary sm:text-lg sm:leading-8">{hero.lead}</p>
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="#contact" class="btn btn-primary">
+          Get in touch
+          <Icon name="arrow-up-right" />
+        </a>
+        <a href={profile.cvUrl} download class="btn btn-outline">
+          <Icon name="download" />
+          Download CV
+        </a>
+      </div>
+    </div>
+
+    <figure class="lg:col-span-5">
+      <div class="relative mx-auto max-w-sm overflow-hidden rounded-3xl bg-background-tertiary ring-1 ring-border-secondary lg:max-w-none">
+        <img
+          src={profile.portraitUrl}
+          width="1600"
+          height="1451"
+          alt={profile.portraitAlt}
+          fetchpriority="high"
+          decoding="async"
+          class="aspect-[4/5] w-full object-cover object-top"
+        />
+        <figcaption class="absolute inset-x-3 bottom-3 flex items-center justify-between gap-3 rounded-2xl bg-background-primary/85 px-4 py-3 text-sm ring-1 ring-border-secondary backdrop-blur-md">
+          <span class="flex items-center gap-2 text-foreground-primary">
+            <Icon name="map-pin" class="size-4 text-foreground-tertiary" />
+            {profile.location}
+          </span>
+          <span class="text-foreground-tertiary">{profile.highlightRole}</span>
+        </figcaption>
+      </div>
+    </figure>
+  </div>
+
+  <div class="container-site mt-16 sm:mt-20">
+    <dl class="grid divide-x divide-border-line border-y border-border-line" style={`grid-template-columns: repeat(${stats.length}, minmax(0, 1fr))`}>
+      {stats.map((stat, i) => (
+        <div class:list={["px-4 py-6 sm:px-8 sm:py-8", i === 0 && "pl-0 sm:pl-0"]}>
+          <dt class="text-xs text-foreground-tertiary sm:text-sm">{stat.label}</dt>
+          <dd class="mt-2 text-2xl font-semibold tabular-nums text-foreground-primary sm:text-4xl">
+            {stat.number !== null ? <NumberTicker client:visible value={stat.number} suffix={stat.suffix} /> : stat.value}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>

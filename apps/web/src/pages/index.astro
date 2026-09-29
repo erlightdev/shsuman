@@ -1,54 +1,92 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import { SiteNavbar } from "@/components/layout/SiteNavbar";
+import About from "@/components/sections/About.astro";
+import BlogPreview from "@/components/sections/BlogPreview.astro";
+import Contact from "@/components/sections/Contact.astro";
+import Credentials from "@/components/sections/Credentials.astro";
+import Experience from "@/components/sections/Experience.astro";
+import Hero from "@/components/sections/Hero.astro";
+import Services from "@/components/sections/Services.astro";
+import Work from "@/components/sections/Work.astro";
+import { getContent, getPosts, setPublicCache } from "@/lib/content";
+import { nav, SITE_URL } from "@/lib/site";
+import Layout from "@/layouts/Layout.astro";
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
+export const prerender = false;
 
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
+const [content, posts] = await Promise.all([getContent(), getPosts()]);
+const { profile, about, credentials, contact, seo } = content;
+setPublicCache(Astro.response.headers);
+
+const structuredData = {
+	"@context": "https://schema.org",
+	"@type": "ProfilePage",
+	"@id": `${SITE_URL}/#profile`,
+	url: SITE_URL,
+	name: `${profile.name} — ${profile.role}`,
+	inLanguage: "en",
+	mainEntity: {
+		"@type": "Person",
+		"@id": `${SITE_URL}/#person`,
+		name: profile.name,
+		jobTitle: profile.currentTitle,
+		description: about.summary,
+		url: SITE_URL,
+		image: profile.portraitUrl,
+		email: `mailto:${contact.email}`,
+		address: { "@type": "PostalAddress", addressLocality: profile.location },
+		worksFor: { "@type": "Organization", name: profile.currentCompany },
+		alumniOf: credentials.education.map((item) => ({
+			"@type": "CollegeOrUniversity",
+			name: item.school,
+		})),
+		hasCredential: credentials.education.map((item) => ({
+			"@type": "EducationalOccupationalCredential",
+			name: item.degree,
+			recognizedBy: { "@type": "CollegeOrUniversity", name: item.school },
+		})),
+		memberOf: credentials.community.map((item) => ({
+			"@type": "OrganizationRole",
+			roleName: item.role,
+			memberOf: {
+				"@type": "Organization",
+				name: `${item.org} — ${item.detail}`,
+			},
+		})),
+		knowsAbout: [
+			"Cybersecurity",
+			"IT infrastructure management",
+			"IS/IT audit",
+			"Risk management",
+			"Compliance",
+			"Network administration",
+			"Cybersecurity training",
+			"Technology policy",
+		],
+		sameAs: seo.sameAs,
+	},
+};
 ---
 
-<Layout title="shsuman">
-  <div class="container mx-auto max-w-3xl px-4 py-2">
-    <pre class="overflow-x-auto font-mono text-sm text-white">{TITLE_TEXT}</pre>
-    <div class="grid gap-6">
-      <section class="rounded-lg border border-neutral-700 p-4">
-        <h2 class="mb-2 font-medium text-white">API Status</h2>
-        <div class="flex items-center gap-2" id="api-status">
-          <div class="h-2 w-2 rounded-full bg-orange-400" id="status-dot"></div>
-          <span class="text-sm text-neutral-400" id="status-text">Checking...</span>
-        </div>
-      </section>
-    </div>
-  </div>
+<Layout title={seo.title} description={seo.description} image={seo.ogImage} siteName={profile.name} structuredData={structuredData}>
+  <a
+    href="#main"
+    class="sr-only z-50 rounded-full bg-foreground-primary px-4 py-2 text-sm text-background-primary focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+  >
+    Skip to content
+  </a>
+
+  <SiteNavbar client:load name={profile.name} items={nav.map((item) => ({ name: item.label, link: item.href }))} />
+
+  <main id="main">
+    <Hero profile={profile} hero={content.hero} />
+    <About about={about} />
+    <Services services={content.services} />
+    <Work work={content.work} />
+    <Experience experience={content.experience} />
+    <Credentials credentials={credentials} />
+    <BlogPreview blog={content.blog} posts={posts} />
+    <Contact contact={contact} footer={content.footer} name={profile.name} />
+  </main>
 </Layout>
 
-<script>
-  import { orpc } from "../lib/orpc";
-
-  const statusDot = document.getElementById("status-dot")!;
-  const statusText = document.getElementById("status-text")!;
-
-  async function checkHealth() {
-    try {
-      const data = await orpc.healthCheck();
-      statusDot.className = "h-2 w-2 rounded-full bg-green-500";
-      statusText.textContent = "Connected";
-    } catch (error) {
-      statusDot.className = "h-2 w-2 rounded-full bg-red-500";
-      statusText.textContent = "Disconnected";
-    }
-  }
-
-  checkHealth();
-</script>

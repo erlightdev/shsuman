@@ -1,0 +1,11 @@
+---
+import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import Layout from "@/layouts/Layout.astro";
+
+export const prerender = false;
+const slug = Astro.params.slug ?? "new";
+---
+
+<Layout title="Edit post — Dashboard" variant="bare" noindex>
+  <DashboardShell client:only="react" route={{ page: "post", slug }} />
+</Layout>

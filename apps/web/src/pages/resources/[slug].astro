@@ -1,0 +1,50 @@
+---
+import Icon from "@/components/common/Icon.astro";
+import Contact from "@/components/sections/Contact.astro";
+import { SiteNavbar } from "@/components/layout/SiteNavbar";
+import { getContent, getResource, setPublicCache } from "@/lib/content";
+import { formatDate, renderMarkdown } from "@/lib/markdown";
+import { nav } from "@/lib/site";
+import Layout from "@/layouts/Layout.astro";
+
+export const prerender = false;
+
+const slug = Astro.params.slug ?? "";
+const [content, item] = await Promise.all([getContent(), getResource(slug)]);
+if (!item) return Astro.rewrite("/404");
+setPublicCache(Astro.response.headers);
+
+const { profile, footer, contact } = content;
+const { html } = renderMarkdown(item.body);
+const external = item.url ? /^https?:/.test(item.url) : false;
+---
+
+<Layout title={`${item.title} — ${profile.name}`} description={item.summary} siteName={profile.name}>
+  <SiteNavbar client:load name={profile.name} items={nav.map((entry) => ({ name: entry.label, link: entry.href }))} />
+
+  <main id="main" class="pt-32 pb-24 sm:pt-40 sm:pb-32">
+    <article class="container-site max-w-3xl">
+      <a href="/resources/" class="inline-flex items-center gap-2 text-sm text-foreground-tertiary hover:text-foreground-primary">
+        <Icon name="arrow-up" class="size-4 -rotate-90" />
+        All resources
+      </a>
+      <p class="mt-10 flex items-center gap-2 font-mono text-xs uppercase text-foreground-tertiary">
+        {item.category} <span aria-hidden="true">·</span> {item.type}
+      </p>
+      <h1 class="mt-4 text-4xl leading-tight font-semibold sm:text-5xl">{item.title}</h1>
+      <p class="mt-5 text-lg leading-8 text-foreground-secondary">{item.summary}</p>
+      <p class="mt-4 text-sm text-foreground-tertiary">Updated {formatDate(item.updatedAt)}</p>
+
+      {item.url && (
+        <a href={item.url} class="btn btn-primary mt-8" {...(external ? { target: "_blank", rel: "noopener" } : { download: "" })}>
+          <Icon name={external ? "arrow-up-right" : "download"} />
+          {external ? "Open resource" : "Download"}
+        </a>
+      )}
+
+      {html && <div class="prose-post mt-12 border-t border-border-line pt-12" set:html={html} />}
+    </article>
+  </main>
+
+  <Contact contact={contact} footer={footer} name={profile.name} />
+</Layout>

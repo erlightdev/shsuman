@@ -1,0 +1,92 @@
+---
+import Icon from "@/components/common/Icon.astro";
+import Contact from "@/components/sections/Contact.astro";
+import { SiteNavbar } from "@/components/layout/SiteNavbar";
+import { getContent, getResources, setPublicCache } from "@/lib/content";
+import { nav, SITE_URL } from "@/lib/site";
+import Layout from "@/layouts/Layout.astro";
+
+export const prerender = false;
+
+const [content, resources] = await Promise.all([getContent(), getResources()]);
+const { profile, footer, contact } = content;
+setPublicCache(Astro.response.headers);
+
+const groups = [...new Set(resources.map((item) => item.category))].map((category) => ({
+  category,
+  items: resources.filter((item) => item.category === category),
+}));
+
+const hrefFor = (item: (typeof resources)[number]) => (item.body.trim() ? `/resources/${item.slug}/` : (item.url ?? "#"));
+const isExternal = (href: string) => /^https?:/.test(href);
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  url: `${SITE_URL}/resources/`,
+  name: `Resources — ${profile.name}`,
+  hasPart: resources.map((item) => ({ "@type": "CreativeWork", name: item.title, description: item.summary })),
+};
+---
+
+<Layout
+  title={`Resources — ${profile.name}`}
+  description={`Guides, templates, checklists and talks from ${profile.name} on cybersecurity, IS/IT audit and IT governance.`}
+  siteName={profile.name}
+  structuredData={structuredData}
+>
+  <SiteNavbar client:load name={profile.name} items={nav.map((item) => ({ name: item.label, link: item.href }))} />
+
+  <main id="main" class="pt-36 pb-24 sm:pt-44 sm:pb-32">
+    <div class="container-site">
+      <header class="max-w-2xl">
+        <p class="eyebrow">Resources</p>
+        <h1 class="mt-4 text-4xl font-semibold sm:text-5xl">Guides, templates and talks.</h1>
+        <p class="mt-4 text-lg leading-8 text-foreground-secondary">
+          Practical material on cybersecurity, IS/IT audit and IT governance.
+        </p>
+      </header>
+
+      {groups.length ? (
+        <div class="mt-16 space-y-16">
+          {groups.map((group) => (
+            <section aria-labelledby={`group-${group.category}`}>
+              <h2 id={`group-${group.category}`} class="text-sm font-medium text-foreground-tertiary">{group.category}</h2>
+              <ul class="mt-4 divide-y divide-border-line border-y border-border-line">
+                {group.items.map((item) => {
+                  const href = hrefFor(item);
+                  return (
+                    <li>
+                      <a
+                        href={href}
+                        {...(isExternal(href) ? { target: "_blank", rel: "noopener" } : {})}
+                        class="group grid gap-2 py-6 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-8"
+                      >
+                        <span>
+                          <span class="flex flex-wrap items-center gap-2">
+                            <span class="text-lg font-medium text-foreground-primary">{item.title}</span>
+                            <span class="badge capitalize">{item.type}</span>
+                            {item.featured && <span class="brand-badge">Featured</span>}
+                          </span>
+                          <span class="mt-2 block max-w-2xl leading-7 text-foreground-secondary">{item.summary}</span>
+                        </span>
+                        <Icon name="arrow-up-right" class="size-5 text-foreground-tertiary transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground-primary" />
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <div class="mt-16 max-w-md rounded-3xl border border-border p-10">
+          <p class="font-medium text-foreground-primary">No resources published yet.</p>
+          <a href="/" class="btn btn-outline mt-6">Back to home</a>
+        </div>
+      )}
+    </div>
+  </main>
+
+  <Contact contact={contact} footer={footer} name={profile.name} />
+</Layout>

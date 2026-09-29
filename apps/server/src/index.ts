@@ -13,6 +13,7 @@ import { evlog, useLogger } from "evlog/express";
 import express from "express";
 
 import { createContext } from "./context";
+import { mcpRouter } from "./mcp";
 import { ENV } from "./env.server";
 import { auth } from "./services";
 
@@ -43,6 +44,8 @@ app.use(
 );
 
 app.all("/api/auth{/*path}", toNodeHandler(auth));
+
+app.use("/mcp", mcpRouter);
 
 const rpcHandler = new RPCHandler(appRouter, {
   interceptors: [

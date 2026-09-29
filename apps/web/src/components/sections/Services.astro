@@ -1,0 +1,27 @@
+---
+import type { SiteContent } from "@shsuman/api/content/schema";
+import SectionHeader from "@/components/common/SectionHeader.astro";
+import { ServicesBento } from "./ServicesBento";
+
+interface Props {
+  services: SiteContent["services"];
+}
+
+const { services } = Astro.props;
+---
+
+<!-- Services — Aceternity Bento Grid + Glowing Effect + Infinite Moving Cards -->
+<section id="services" aria-labelledby="services-title" class="border-t border-border-line py-24 sm:py-32">
+  <div class="container-site">
+    <SectionHeader
+      id="services-title"
+      index="02"
+      label="Services"
+      title={services.title}
+      lead={services.lead}
+    />
+    <div class="mt-12">
+      <ServicesBento client:visible content={services} />
+    </div>
+  </div>
+</section>

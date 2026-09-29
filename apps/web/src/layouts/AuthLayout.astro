@@ -1,0 +1,54 @@
+---
+import BlogCover from "@/components/blog/BlogCover.astro";
+import Icon from "@/components/common/Icon.astro";
+import { defaultContent } from "@shsuman/api/content/defaults";
+import Layout from "./Layout.astro";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+const { profile } = defaultContent;
+---
+
+<Layout title={title} variant="bare" noindex>
+  <div class="flex h-dvh max-h-dvh flex-col justify-between overflow-y-auto lg:overflow-hidden p-4 sm:p-6">
+    <header class="flex items-center justify-between shrink-0">
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs sm:text-sm font-medium text-foreground-tertiary transition-colors hover:text-foreground-primary hover:bg-foreground/5"
+      >
+        <Icon name="arrow-up" class="size-3.5 sm:size-4 -rotate-90" />
+        Back to home
+      </a>
+
+      <span class="text-xs font-mono text-foreground-tertiary">
+        {profile.name}
+      </span>
+    </header>
+
+    <main class="flex flex-1 items-center justify-center py-2 sm:py-4 min-h-0">
+      <div class="grid w-full max-w-4xl lg:max-w-5xl gap-2 sm:gap-4 rounded-3xl border border-border bg-background p-2.5 sm:p-3 shadow-xs lg:grid-cols-2 lg:h-[min(34rem,75vh)]">
+        <div class="relative hidden overflow-hidden rounded-2xl lg:block size-full min-h-0">
+          <BlogCover variant="rings" badge class="absolute inset-0 size-full">
+            <Icon name="shield" class="size-7 text-neutral-900" />
+          </BlogCover>
+          <span class="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-white/90 px-3.5 py-1.5 text-xs font-medium text-neutral-900 ring-1 ring-black/5 shadow-xs backdrop-blur">
+            <Icon name="shield" class="size-3.5" />
+            {profile.name}
+          </span>
+        </div>
+
+        <div class="flex items-center justify-center p-4 sm:p-8 lg:p-10 overflow-y-auto">
+          <slot />
+        </div>
+      </div>
+    </main>
+
+    <footer class="text-center text-[11px] text-foreground-tertiary shrink-0 py-1">
+      &copy; {new Date().getFullYear()} {profile.name}. All rights reserved.
+    </footer>
+  </div>
+</Layout>
+

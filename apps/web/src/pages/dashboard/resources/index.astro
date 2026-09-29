@@ -1,0 +1,11 @@
+---
+import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import Layout from "@/layouts/Layout.astro";
+
+export const prerender = false;
+
+---
+
+<Layout title="Resources — Dashboard" variant="bare" noindex>
+  <DashboardShell client:only="react" route={{ page: "resources" }} />
+</Layout>

@@ -1,0 +1,11 @@
+---
+import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import Layout from "@/layouts/Layout.astro";
+
+export const prerender = false;
+const section = Astro.params.section ?? "";
+---
+
+<Layout title="Edit section — Dashboard" variant="bare" noindex>
+  <DashboardShell client:only="react" route={{ page: "section", section }} />
+</Layout>

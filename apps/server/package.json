@@ -9,9 +9,11 @@
     "start": "node dist/index.mjs",
     "dev:bare": "tsx watch src/index.ts",
     "env:generate": "varlock codegen",
-    "auth:generate": "varlock run -- npx --yes auth@latest generate --config src/services.ts --output ../../packages/db/src/schema/auth.ts --yes"
+    "auth:generate": "varlock run -- npx --yes auth@latest generate --config src/services.ts --output ../../packages/db/src/schema/auth.ts --yes",
+    "seed": "tsx src/scripts/seed.ts"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.31.0",
     "@orpc/openapi": "^1.15.0",
     "@orpc/server": "^1.15.0",
     "@orpc/zod": "^1.15.0",
