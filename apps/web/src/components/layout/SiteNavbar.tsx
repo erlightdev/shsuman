@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Award,
   BookOpen,
   Briefcase,
   FolderOpen,
@@ -25,6 +26,7 @@ const ICON_MAP: Record<string, typeof Home> = {
   about: User,
   services: Layers,
   experience: GraduationCap,
+  awards: Award,
   resources: FolderOpen,
   blog: BookOpen,
   contact: Mail,

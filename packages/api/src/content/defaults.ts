@@ -284,6 +284,7 @@ export const defaultContent: SiteContent = {
     location: "Nagarjun 09, Syuchatar, Kathmandu, Nepal 44600",
     links: [
       { label: "Email", detail: "contact@shsuman.com.np", href: "mailto:contact@shsuman.com.np" },
+      { label: "WhatsApp", detail: "+977 98541538467", href: "https://wa.me/97798541538467" },
       { label: "Call", detail: "+977 98541538467 · WhatsApp / Viber", href: "tel:+97798541538467" },
       {
         label: "LinkedIn",
