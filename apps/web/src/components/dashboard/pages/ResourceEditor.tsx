@@ -2,6 +2,7 @@ import { RESOURCE_TYPES, resourceInput } from "@shsuman/api/content/schema";
 import { ArrowLeft, ExternalLink, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AttachmentUpload } from "@/components/ui/attachment-upload";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -173,14 +174,17 @@ export function ResourceEditor({ slug }: { slug: string }) {
           <div className="min-w-0 space-y-6">
             <TextField label="Title" value={form.title} onChange={(v) => set("title", v)} error={errors.title} max={200} />
             <TextField label="Summary" value={form.summary} onChange={(v) => set("summary", v)} error={errors.summary} max={320} multiline />
-            <TextField
-              label="File or link"
-              value={form.url}
-              onChange={(v) => set("url", v)}
-              error={errors.url}
-              placeholder="https://… or /file.pdf"
-              hint="Optional. Visitors get a Download or Open button."
-            />
+            <div className="space-y-2">
+              <AttachmentUpload
+                label="File or link"
+                value={form.url}
+                onChange={(url) => set("url", url)}
+                accept="image/*,application/pdf"
+                previewType="auto"
+                hint="Upload a file or paste a link. Visitors get a Download or Open button."
+              />
+              {errors.url && <p className="text-sm text-destructive">{errors.url}</p>}
+            </div>
             <div className="space-y-2">
               <Label>Details (optional)</Label>
               <RichTextEditor value={form.body} onChange={(v) => set("body", v)} aria-label="Resource details" placeholder="Add details, steps or notes. Leave empty to link straight to the file." />

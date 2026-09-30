@@ -1,7 +1,6 @@
 import { type Accent, accentFor, accentStyles } from "@/lib/accents";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "motion/react";
-
 import { useState } from "react";
 
 export const HoverEffect = ({
@@ -13,23 +12,23 @@ export const HoverEffect = ({
     description: string;
     link?: string;
     tags?: string[];
-    accent?: Accent;
+    accent?: Accent | null;
   }[];
   className?: string;
 }) => {
-  let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
     <div
       className={cn(
-        "grid grid-cols-1 md:grid-cols-2  lg:grid-cols-3  py-10",
+        "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 py-10",
         className
       )}
     >
       {items.map((item, idx) => (
         <div
           key={item.title}
-          className="relative group  block p-2 h-full w-full"
+          className="relative group block p-2 h-full w-full"
           onMouseEnter={() => setHoveredIndex(idx)}
           onMouseLeave={() => setHoveredIndex(null)}
         >
@@ -50,7 +49,7 @@ export const HoverEffect = ({
               />
             )}
           </AnimatePresence>
-          <Card accent={accentFor(item.accent, idx)}>
+          <Card accent={accentFor(item.accent ?? undefined, idx)}>
             <CardTitle>{item.title}</CardTitle>
             <CardDescription>{item.description}</CardDescription>
             {item.tags && (
@@ -74,7 +73,7 @@ export const Card = ({
 }: {
   className?: string;
   children: React.ReactNode;
-  accent?: Accent;
+  accent?: Accent | null;
 }) => {
   const styles = accent ? accentStyles(accent) : null;
   return (
@@ -110,6 +109,7 @@ export const Card = ({
     </div>
   );
 };
+
 export const CardTitle = ({
   className,
   children,
@@ -123,6 +123,7 @@ export const CardTitle = ({
     </h3>
   );
 };
+
 export const CardDescription = ({
   className,
   children,

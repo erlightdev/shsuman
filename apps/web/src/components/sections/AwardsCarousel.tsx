@@ -13,10 +13,69 @@ import {
   Users,
 } from "lucide-react";
 import type { SiteContent } from "@shsuman/api/content/schema";
+import { resolveMediaUrl } from "@/lib/media";
 
 interface Props {
   awards: SiteContent["awards"];
   credentials?: SiteContent["credentials"];
+}
+
+function CardCoverImage({
+  src,
+  alt,
+  fallback,
+}: {
+  src?: string | null;
+  alt: string;
+  fallback: React.ReactNode;
+}) {
+  const [error, setError] = useState(false);
+  const resolved = resolveMediaUrl(src);
+
+  if (!resolved || error) {
+    return <>{fallback}</>;
+  }
+
+  return (
+    <img
+      src={resolved}
+      alt={alt}
+      onError={() => setError(true)}
+      className="size-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+    />
+  );
+}
+
+function ItemThumbnail({
+  src,
+  fallbackIcon: FallbackIcon,
+  hoverColor = "text-brand-base",
+}: {
+  src?: string | null;
+  fallbackIcon: React.ElementType;
+  hoverColor?: string;
+}) {
+  const [error, setError] = useState(false);
+  const resolved = resolveMediaUrl(src);
+
+  if (!resolved || error) {
+    return (
+      <FallbackIcon
+        className={`size-4 text-foreground-tertiary group-hover/item:${hoverColor} transition-colors shrink-0`}
+      />
+    );
+  }
+
+  return (
+    <div className="size-5.5 shrink-0 overflow-hidden rounded-md border border-border-primary/60 bg-muted/40 grid place-items-center">
+      <img
+        src={resolved}
+        alt=""
+        onError={() => setError(true)}
+        className="size-full object-cover"
+      />
+    </div>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -379,18 +438,22 @@ export function AwardsCarousel({ awards, credentials }: Props) {
           <div className="min-w-0 flex-[0_0_100%] sm:flex-[0_0_calc(50%-12px)] lg:flex-[0_0_calc(33.333%-16px)]">
             <article className="group/card flex h-full flex-col justify-between rounded-3xl border border-border-primary/80 bg-background-secondary p-5 sm:p-6 transition-all duration-300 hover:border-border-secondary hover:shadow-xl hover:shadow-emerald-950/5">
               <div>
-                {/* Visual Header Graphic */}
-                <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border-primary/40 shadow-inner">
-                  <IsometricStackGraphic />
+                {/* Visual Header Graphic / Custom Cover Image */}
+                <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border-primary/40 bg-muted/20 shadow-inner">
+                  <CardCoverImage
+                    src={awards.card1Image}
+                    alt={awards.card1Title || "Accredited credentials"}
+                    fallback={<IsometricStackGraphic />}
+                  />
                 </div>
 
                 {/* Card Title & Denoised Description */}
                 <div className="mt-6">
                   <h3 className="text-xl font-semibold tracking-tight text-foreground-primary sm:text-2xl font-display">
-                    Accredited credentials
+                    {awards.card1Title || "Accredited credentials"}
                   </h3>
                   <p className="mt-2 text-sm text-foreground-secondary/85 leading-relaxed">
-                    Formal industry accreditations spanning IS/IT systems audit, enterprise network security, and risk compliance.
+                    {awards.card1Description || "Formal industry accreditations spanning IS/IT systems audit, enterprise network security, and risk compliance."}
                   </p>
                 </div>
               </div>
@@ -405,12 +468,27 @@ export function AwardsCarousel({ awards, credentials }: Props) {
                         className="group/item flex items-center justify-between gap-3 text-sm transition-colors"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <ShieldCheck className="size-4 text-foreground-tertiary group-hover/item:text-brand-base transition-colors shrink-0" />
+                          <ItemThumbnail
+                            src={cert.imageUrl}
+                            fallbackIcon={ShieldCheck}
+                            hoverColor="text-brand-base"
+                          />
                           <span className="truncate font-medium text-foreground-secondary group-hover/item:text-foreground-primary transition-colors">
                             {cert.name}
                           </span>
                         </div>
-                        <ArrowUpRight className="size-4 text-foreground-muted group-hover/item:text-foreground-primary group-hover/item:translate-x-0.5 group-hover/item:-translate-y-0.5 transition-all shrink-0" />
+                        {cert.credentialUrl ? (
+                          <a
+                            href={cert.credentialUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`Verify ${cert.name}`}
+                          >
+                            <ArrowUpRight className="size-4 text-foreground-muted group-hover/item:text-foreground-primary group-hover/item:translate-x-0.5 group-hover/item:-translate-y-0.5 transition-all shrink-0" />
+                          </a>
+                        ) : (
+                          <ArrowUpRight className="size-4 text-foreground-muted group-hover/item:text-foreground-primary group-hover/item:translate-x-0.5 group-hover/item:-translate-y-0.5 transition-all shrink-0" />
+                        )}
                       </li>
                     ))
                   ) : (
@@ -455,18 +533,22 @@ export function AwardsCarousel({ awards, credentials }: Props) {
           <div className="min-w-0 flex-[0_0_100%] sm:flex-[0_0_calc(50%-12px)] lg:flex-[0_0_calc(33.333%-16px)]">
             <article className="group/card flex h-full flex-col justify-between rounded-3xl border border-border-primary/80 bg-background-secondary p-5 sm:p-6 transition-all duration-300 hover:border-border-secondary hover:shadow-xl hover:shadow-amber-950/5">
               <div>
-                {/* Visual Header Graphic */}
-                <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border-primary/40 shadow-inner">
-                  <NetworkNodesGraphic />
+                {/* Visual Header Graphic / Custom Cover Image */}
+                <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border-primary/40 bg-muted/20 shadow-inner">
+                  <CardCoverImage
+                    src={awards.card2Image}
+                    alt={awards.card2Title || "Honors & leadership"}
+                    fallback={<NetworkNodesGraphic />}
+                  />
                 </div>
 
                 {/* Card Title & Denoised Description */}
                 <div className="mt-6">
                   <h3 className="text-xl font-semibold tracking-tight text-foreground-primary sm:text-2xl font-display">
-                    Honors & leadership
+                    {awards.card2Title || "Honors & leadership"}
                   </h3>
                   <p className="mt-2 text-sm text-foreground-secondary/85 leading-relaxed">
-                    Recognized for national cybersecurity policy advocacy, executive training, and pioneering the open internet ecosystem.
+                    {awards.card2Description || "Recognized for national cybersecurity policy advocacy, executive training, and pioneering the open internet ecosystem."}
                   </p>
                 </div>
               </div>
@@ -481,12 +563,27 @@ export function AwardsCarousel({ awards, credentials }: Props) {
                         className="group/item flex items-center justify-between gap-3 text-sm transition-colors"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <Award className="size-4 text-foreground-tertiary group-hover/item:text-amber-500 transition-colors shrink-0" />
+                          <ItemThumbnail
+                            src={award.imageUrl}
+                            fallbackIcon={Award}
+                            hoverColor="text-amber-500"
+                          />
                           <span className="truncate font-medium text-foreground-secondary group-hover/item:text-foreground-primary transition-colors">
                             {award.title}
                           </span>
                         </div>
-                        <ArrowUpRight className="size-4 text-foreground-muted group-hover/item:text-foreground-primary group-hover/item:translate-x-0.5 group-hover/item:-translate-y-0.5 transition-all shrink-0" />
+                        {award.certificateUrl ? (
+                          <a
+                            href={award.certificateUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`View certificate for ${award.title}`}
+                          >
+                            <ArrowUpRight className="size-4 text-foreground-muted group-hover/item:text-foreground-primary group-hover/item:translate-x-0.5 group-hover/item:-translate-y-0.5 transition-all shrink-0" />
+                          </a>
+                        ) : (
+                          <ArrowUpRight className="size-4 text-foreground-muted group-hover/item:text-foreground-primary group-hover/item:translate-x-0.5 group-hover/item:-translate-y-0.5 transition-all shrink-0" />
+                        )}
                       </li>
                     ))
                   ) : (
@@ -531,51 +628,46 @@ export function AwardsCarousel({ awards, credentials }: Props) {
           <div className="min-w-0 flex-[0_0_100%] sm:flex-[0_0_calc(50%-12px)] lg:flex-[0_0_calc(33.333%-16px)]">
             <article className="group/card flex h-full flex-col justify-between rounded-3xl border border-border-primary/80 bg-background-secondary p-5 sm:p-6 transition-all duration-300 hover:border-border-secondary hover:shadow-xl hover:shadow-emerald-950/5">
               <div>
-                {/* Visual Header Graphic */}
-                <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border-primary/40 shadow-inner">
-                  <OrbitalVerifiedGraphic />
+                {/* Visual Header Graphic / Custom Cover Image */}
+                <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border-primary/40 bg-muted/20 shadow-inner">
+                  <CardCoverImage
+                    src={awards.card3Image}
+                    alt={awards.card3Title || "Proven governance"}
+                    fallback={<OrbitalVerifiedGraphic />}
+                  />
                 </div>
 
                 {/* Card Title & Denoised Description */}
                 <div className="mt-6">
                   <h3 className="text-xl font-semibold tracking-tight text-foreground-primary sm:text-2xl font-display">
-                    Proven governance
+                    {awards.card3Title || "Proven governance"}
                   </h3>
                   <p className="mt-2 text-sm text-foreground-secondary/85 leading-relaxed">
-                    Over fifteen years of securing critical infrastructure, performing rigorous audits, and advising executive leadership.
+                    {awards.card3Description || "Over fifteen years of securing critical infrastructure, performing rigorous audits, and advising executive leadership."}
                   </p>
                 </div>
               </div>
 
-              {/* Clean Metric Rows (exact style as card 3 in reference image) */}
+              {/* Clean Metric Rows (dynamic from backend or default fallbacks) */}
               <div className="mt-8 border-t border-border-primary/60 pt-5">
                 <div className="space-y-3.5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-normal text-foreground-secondary">
-                      IS/IT audits completed
-                    </span>
-                    <span className="font-mono text-base font-semibold text-foreground-primary tracking-tight">
-                      100+
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-normal text-foreground-secondary">
-                      Years of security practice
-                    </span>
-                    <span className="font-mono text-base font-semibold text-foreground-primary tracking-tight">
-                      15+
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-normal text-foreground-secondary">
-                      System uptime & reliability
-                    </span>
-                    <span className="font-mono text-base font-semibold text-foreground-primary tracking-tight">
-                      99.9%
-                    </span>
-                  </div>
+                  {(awards.metrics && awards.metrics.length > 0
+                    ? awards.metrics
+                    : [
+                        { label: "IS/IT audits completed", value: "100+" },
+                        { label: "Years of security practice", value: "15+" },
+                        { label: "System uptime & reliability", value: "99.9%" },
+                      ]
+                  ).map((metric) => (
+                    <div key={metric.label} className="flex items-center justify-between text-sm">
+                      <span className="font-normal text-foreground-secondary">
+                        {metric.label}
+                      </span>
+                      <span className="font-mono text-base font-semibold text-foreground-primary tracking-tight">
+                        {metric.value}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </article>

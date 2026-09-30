@@ -14,7 +14,22 @@ import { ConfirmDialog } from "../ConfirmDialog";
 import { errorMessage, useLoader } from "../hooks";
 import { PageHeader } from "../PageHeader";
 
-const endpoint = `${ENV.PUBLIC_SERVER_URL.replace(/\/$/, "")}/mcp`;
+function getMcpEndpoint(): string {
+  try {
+    if (typeof ENV !== "undefined" && ENV) {
+      const val = (ENV as unknown as Record<string, string>)["PUBLIC_SERVER_URL"];
+      if (val) return `${val.replace(/\/$/, "")}/mcp`;
+    }
+  } catch {}
+  try {
+    if (typeof import.meta !== "undefined" && import.meta.env?.PUBLIC_SERVER_URL) {
+      return `${String(import.meta.env.PUBLIC_SERVER_URL).replace(/\/$/, "")}/mcp`;
+    }
+  } catch {}
+  return "http://localhost:3000/mcp";
+}
+
+const endpoint = getMcpEndpoint();
 
 function CopyButton({ value, label }: { value: string; label: string }) {
   const [copied, setCopied] = useState(false);

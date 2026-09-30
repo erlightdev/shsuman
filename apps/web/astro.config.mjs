@@ -12,6 +12,14 @@ export default defineConfig({
   output: "server",
   adapter: node({ mode: "standalone" }),
   vite: {
+    server: {
+      proxy: {
+        "/uploads": {
+          target: "http://localhost:3000",
+          changeOrigin: true,
+        },
+      },
+    },
     plugins: [tailwindcss()],
     // Prebundle client deps up front so the dev server doesn't re-optimize
     // mid-session (which breaks islands with "504 Outdated Optimize Dep").

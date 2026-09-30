@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { AttachmentUpload } from "@/components/ui/attachment-upload";
 import { contentIcons } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +41,7 @@ const LABELS: Record<string, string> = {
   highlightRole: "Portrait caption",
   portraitUrl: "Portrait image",
   portraitAlt: "Portrait description (alt text)",
-  cvUrl: "CV file",
+  cvUrl: "CV / Resume file",
   ogImage: "Social share image",
   sameAs: "Profile links for search engines",
   logoUrl: "Logo image",
@@ -55,10 +56,27 @@ const LABELS: Record<string, string> = {
   credentialId: "Credential ID / License (optional)",
   school: "School / Institution",
   degree: "Degree / Qualification",
+  enabled: "Section visible on homepage",
+  imageUrl: "Image / Badge (optional)",
+  credentialUrl: "Credential verification URL (optional)",
+  certificateUrl: "Certificate file / link (optional)",
+  card1Title: "Card 1: Title (Certifications)",
+  card1Description: "Card 1: Description",
+  card1Image: "Card 1: Cover image (optional)",
+  certifications: "Card 1: Certifications list",
+  card2Title: "Card 2: Title (Honors & Leadership)",
+  card2Description: "Card 2: Description",
+  card2Image: "Card 2: Cover image (optional)",
+  awards: "Card 2: Honors & awards list",
+  card3Title: "Card 3: Title (Proven Governance)",
+  card3Description: "Card 3: Description",
+  card3Image: "Card 3: Cover image (optional)",
+  metrics: "Card 3: Governance metric rows",
 };
 
 const MARKDOWN_FIELDS = new Set(["blurb"]);
-const IMAGE_FIELD = /(portraitUrl|logoUrl|ogImage|image)$/i;
+const ATTACHMENT_FIELDS =
+  /(portraitUrl|cvUrl|logoUrl|ogImage|imageUrl|coverImage|certificateUrl|bannerUrl|.*Image|.*Attachment|.*File)$/i;
 
 function humanize(key: string) {
   if (LABELS[key]) return LABELS[key];
@@ -70,11 +88,14 @@ function singular(label: string) {
   return label.replace(/ies$/, "y").replace(/s$/, "");
 }
 
-function emptyFor(schema: JsonSchema): unknown {
+function emptyFor(schema?: JsonSchema): unknown {
+  if (!schema) return "";
   const type = Array.isArray(schema.type) ? schema.type[0] : schema.type;
-  if (schema.enum) return schema.enum[0];
+  if (schema.enum && schema.enum.length > 0) return schema.enum[0];
   if (type === "object") {
-    return Object.fromEntries(Object.entries(schema.properties ?? {}).map(([key, value]) => [key, emptyFor(value)]));
+    return Object.fromEntries(
+      Object.entries(schema.properties ?? {}).map(([key, value]) => [key, emptyFor(value)]),
+    );
   }
   if (type === "array") return [];
   if (type === "boolean") return false;
@@ -167,24 +188,23 @@ function StringField({ name, path, schema, value, onChange, errors }: FieldProps
     );
   }
 
-  if (IMAGE_FIELD.test(name)) {
-    const preview = /^(https?:\/\/|\/)/.test(text) ? text : null;
+  if (ATTACHMENT_FIELDS.test(name)) {
+    const isDoc = name.toLowerCase().includes("cv") || name.toLowerCase().includes("certificate");
     return (
       <div className="space-y-2">
-        <Label htmlFor={id}>{label}</Label>
-        <div className="flex items-start gap-3">
-          <div className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-xl border border-border bg-muted">
-            {preview ? (
-              <img src={preview} alt="" className="size-full object-cover" />
-            ) : (
-              <span className="text-xs text-muted-foreground">None</span>
-            )}
-          </div>
-          <div className="min-w-0 flex-1 space-y-1">
-            <Input {...common} type="url" inputMode="url" value={text} onChange={(e) => onChange(e.target.value)} placeholder="https://… or /image.jpg" />
-            <p className="text-xs text-muted-foreground">Paste an image URL, or a path to a file in /public.</p>
-          </div>
-        </div>
+        <AttachmentUpload
+          id={id}
+          label={label}
+          value={text}
+          onChange={(newUrl) => onChange(newUrl)}
+          accept={isDoc ? "image/*,application/pdf" : "image/*"}
+          previewType={isDoc ? "auto" : "image"}
+          hint={
+            isDoc
+              ? "Upload a PDF document or image file, or paste a URL."
+              : "Upload an image (PNG, JPG, WebP, SVG) or paste a URL."
+          }
+        />
         <FieldError id={errorId} message={error} />
       </div>
     );
@@ -379,14 +399,21 @@ function ArrayField({ name, path, schema, value, onChange, errors }: FieldProps)
 }
 
 function Field(props: FieldProps) {
-  const type = Array.isArray(props.schema.type) ? props.schema.type[0] : props.schema.type;
+  const schema = props.schema ?? {};
+  const type = Array.isArray(schema.type) ? schema.type[0] : schema.type;
   if (type === "array") return <ArrayField {...props} />;
   if (type === "boolean") return <BooleanField {...props} />;
   if (type === "object") {
     return (
       <fieldset className="space-y-4 rounded-xl border border-border p-4">
         <legend className="px-1 text-sm font-medium">{humanize(props.name)}</legend>
-        <ObjectFields schema={props.schema} path={props.path} value={(props.value ?? {}) as Record<string, unknown>} onChange={props.onChange} errors={props.errors} />
+        <ObjectFields
+          schema={schema}
+          path={props.path}
+          value={(props.value ?? {}) as Record<string, unknown>}
+          onChange={props.onChange}
+          errors={props.errors}
+        />
       </fieldset>
     );
   }
@@ -406,16 +433,18 @@ export function ObjectFields({
   onChange: (value: Record<string, unknown>) => void;
   errors: FieldErrors;
 }) {
+  const safeValue = value ?? {};
+  const properties = schema?.properties ?? {};
   return (
     <>
-      {Object.entries(schema.properties ?? {}).map(([key, child]) => (
+      {Object.entries(properties).map(([key, child]) => (
         <Field
           key={key}
           name={key}
           path={path ? `${path}.${key}` : key}
-          schema={child}
-          value={value[key]}
-          onChange={(next) => onChange({ ...value, [key]: next })}
+          schema={child ?? { type: "string" }}
+          value={safeValue[key]}
+          onChange={(next) => onChange({ ...safeValue, [key]: next })}
           errors={errors}
         />
       ))}

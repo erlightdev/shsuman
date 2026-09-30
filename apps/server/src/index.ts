@@ -14,6 +14,7 @@ import express from "express";
 
 import { createContext } from "./context";
 import { mcpRouter } from "./mcp";
+import { uploadRouter, uploadsDir } from "./upload";
 import { ENV } from "./env.server";
 import { auth } from "./services";
 
@@ -43,8 +44,11 @@ app.use(
   }),
 );
 
-app.all("/api/auth{/*path}", toNodeHandler(auth));
+// Serve static uploads
+app.use("/uploads", express.static(uploadsDir));
 
+app.all("/api/auth{/*path}", toNodeHandler(auth));
+app.use("/api/upload", uploadRouter);
 app.use("/mcp", mcpRouter);
 
 const rpcHandler = new RPCHandler(appRouter, {

@@ -23,7 +23,9 @@ export async function getSiteContent(db: Database): Promise<SiteContent> {
   for (const row of rows) {
     const key = row.section as SectionKey;
     if (!SECTION_KEYS.includes(key)) continue;
-    const parsed = sectionSchemas[key].safeParse(row.data);
+    if (!row?.data || typeof row.data !== "object") continue;
+    const merged = { ...defaultContent[key], ...(row.data as Record<string, unknown>) };
+    const parsed = sectionSchemas[key].safeParse(merged);
     if (parsed.success) (content as Record<SectionKey, unknown>)[key] = parsed.data;
   }
   return content;
@@ -31,8 +33,12 @@ export async function getSiteContent(db: Database): Promise<SiteContent> {
 
 export async function getSection<K extends SectionKey>(db: Database, key: K): Promise<SiteContent[K]> {
   const [row] = await db.select().from(siteContent).where(eq(siteContent.section, key));
-  const parsed = row ? sectionSchemas[key].safeParse(row.data) : null;
-  return (parsed?.success ? parsed.data : defaultContent[key]) as SiteContent[K];
+  if (!row?.data || typeof row.data !== "object") {
+    return defaultContent[key];
+  }
+  const merged = { ...defaultContent[key], ...(row.data as Record<string, unknown>) };
+  const parsed = sectionSchemas[key].safeParse(merged);
+  return (parsed.success ? parsed.data : defaultContent[key]) as SiteContent[K];
 }
 
 /**
@@ -63,11 +69,26 @@ export async function resetSection(db: Database, key: SectionKey) {
 
 export async function getContentMeta(db: Database) {
   const rows = await db
-    .select({ section: siteContent.section, updatedAt: siteContent.updatedAt, updatedBy: siteContent.updatedBy })
+    .select({
+      section: siteContent.section,
+      data: siteContent.data,
+      updatedAt: siteContent.updatedAt,
+      updatedBy: siteContent.updatedBy,
+    })
     .from(siteContent);
   return SECTION_KEYS.map((key) => {
     const row = rows.find((item) => item.section === key);
-    return { section: key, customized: Boolean(row), updatedAt: row?.updatedAt ?? null, updatedBy: row?.updatedBy ?? null };
+    let enabled = true;
+    if (row?.data && typeof row.data === "object" && "enabled" in row.data) {
+      enabled = (row.data as { enabled?: boolean }).enabled !== false;
+    }
+    return {
+      section: key,
+      customized: Boolean(row),
+      enabled,
+      updatedAt: row?.updatedAt ?? null,
+      updatedBy: row?.updatedBy ?? null,
+    };
   });
 }
 

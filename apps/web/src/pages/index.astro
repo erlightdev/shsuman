@@ -87,15 +87,15 @@ const structuredData = {
   <SiteNavbar client:load name={profile.name} items={nav.map((item) => ({ name: item.label, link: item.href }))} />
 
   <main id="main">
-    <Hero profile={profile} hero={content.hero} />
-    <About about={about} />
-    <Services services={content.services} />
-    <Work work={content.work} />
-    <Experience experience={content.experience} />
-    <Credentials credentials={credentials} />
-    <Awards awards={awards} credentials={credentials} />
-    <BlogPreview blog={content.blog} posts={posts} />
-    <Contact contact={contact} footer={content.footer} name={profile.name} />
+    {content.hero?.enabled !== false && <Hero profile={profile} hero={content.hero} />}
+    {content.about?.enabled !== false && <About about={about} />}
+    {content.services?.enabled !== false && <Services services={content.services} />}
+    {content.work?.enabled !== false && <Work work={content.work} />}
+    {content.experience?.enabled !== false && <Experience experience={content.experience} />}
+    {content.credentials?.enabled !== false && <Credentials credentials={credentials} />}
+    {content.awards?.enabled !== false && <Awards awards={awards} credentials={credentials} />}
+    {content.blog?.enabled !== false && <BlogPreview blog={content.blog} posts={posts} />}
+    {content.contact?.enabled !== false && <Contact contact={contact} footer={content.footer} name={profile.name} />}
   </main>
 </Layout>
 

@@ -103,6 +103,22 @@ export const MCP_TOOLS: ToolDef[] = [
       ),
   },
   {
+    name: "toggle_section",
+    title: "Toggle homepage section",
+    description: "Enable or disable visibility of a section on the homepage (hero, about, services, work, experience, credentials, awards, blog, contact).",
+    input: {
+      section: sectionKey,
+      enabled: z.boolean().describe("true to show the section on the homepage, false to hide it"),
+    },
+    run: async ({ db, actor }, args) =>
+      updateSection(
+        db,
+        args.section as (typeof SECTION_KEYS)[number],
+        { enabled: Boolean(args.enabled) },
+        `mcp:${actor.email}`,
+      ),
+  },
+  {
     name: "reset_section",
     title: "Reset section",
     description: "Discard saved changes to a section and restore its default content.",

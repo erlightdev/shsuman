@@ -18,7 +18,7 @@ const seedDir = fileURLToPath(new URL("../../../../packages/api/src/content/seed
 
 function parseFrontmatter(source: string) {
   const match = source.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
-  if (!match) throw new Error("Missing frontmatter");
+  if (!match || match[1] === undefined || match[2] === undefined) throw new Error("Missing frontmatter");
   const data: Record<string, unknown> = {};
   for (const line of match[1].split("\n")) {
     const [key, ...rest] = line.split(":");

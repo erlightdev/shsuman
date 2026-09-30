@@ -1,6 +1,6 @@
 import { hasRole } from "@shsuman/auth/permissions";
 import { ExternalLink, Loader2, LogOut, Moon, PanelLeftClose, PanelLeftOpen, ShieldAlert, Sun } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   AnimatedSidebar,
   AnimatedSidebarContent,
@@ -23,7 +23,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 
-import { useState } from "react";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { type DashboardRoute, navGroups, pathToRoute } from "./nav";
 import { BlogList } from "./pages/BlogList";
 import { ContentList } from "./pages/ContentList";
@@ -316,7 +316,9 @@ export function DashboardShell({ route: initialRoute }: { route: DashboardRoute 
           }}
           className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-8"
         >
-          <RoutePage route={currentRoute} isAdmin={isAdmin} />
+          <ErrorBoundary>
+            <RoutePage route={currentRoute} isAdmin={isAdmin} />
+          </ErrorBoundary>
         </div>
       </AnimatedSidebarInset>
       <Toaster position="bottom-right" />

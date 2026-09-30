@@ -28,16 +28,41 @@ export const COVERS = ["rings", "wave", "fan"] as const;
 
 const line = (max = 160) => z.string().trim().min(1).max(max);
 const para = (max = 1200) => z.string().trim().min(1).max(max);
-const url = z.string().trim().max(2048).refine((value) => /^(https?:\/\/|\/)/.test(value), {
+
+export const optionalLine = (max = 160) => z.string().trim().max(max).optional().nullable();
+
+export const url = z.string().trim().max(2048).refine((value) => /^(https?:\/\/|\/)/.test(value), {
   message: "Must be an absolute http(s) URL or a site path starting with /",
 });
-const href = z
+
+export const optionalUrl = z
+  .string()
+  .trim()
+  .max(2048)
+  .optional()
+  .nullable()
+  .refine((value) => !value || value === "" || /^(https?:\/\/|\/)/.test(value), {
+    message: "Must be an absolute http(s) URL or a site path starting with /",
+  });
+
+export const href = z
   .string()
   .trim()
   .max(2048)
   .refine((value) => /^(https?:\/\/|mailto:|tel:|\/|#)/.test(value), {
     message: "Must start with http(s)://, mailto:, tel:, / or #",
   });
+
+export const optionalHref = z
+  .string()
+  .trim()
+  .max(2048)
+  .optional()
+  .nullable()
+  .refine((value) => !value || value === "" || /^(https?:\/\/|mailto:|tel:|\/|#)/.test(value), {
+    message: "Must start with http(s)://, mailto:, tel:, / or #",
+  });
+
 const list = <T extends z.ZodType>(item: T, max: number) => z.array(item).min(1).max(max);
 
 export const profileSection = z.strictObject({
@@ -53,6 +78,7 @@ export const profileSection = z.strictObject({
 });
 
 export const heroSection = z.strictObject({
+  enabled: z.boolean().default(true),
   flipPrefix: line(60),
   flipWords: list(line(30), 6),
   lead: para(400),
@@ -60,6 +86,7 @@ export const heroSection = z.strictObject({
 });
 
 export const aboutSection = z.strictObject({
+  enabled: z.boolean().default(true),
   title: line(120),
   summary: para(900),
   passion: para(400),
@@ -68,6 +95,7 @@ export const aboutSection = z.strictObject({
 });
 
 export const servicesSection = z.strictObject({
+  enabled: z.boolean().default(true),
   title: line(120),
   lead: para(300),
   items: list(
@@ -88,19 +116,21 @@ export const servicesSection = z.strictObject({
 export const ACCENTS = ["amber", "sky", "emerald", "violet", "rose"] as const;
 
 export const workSection = z.strictObject({
+  enabled: z.boolean().default(true),
   title: line(120),
   items: list(
     z.strictObject({
       title: line(100),
       description: para(500),
       tags: z.array(line(30)).max(6),
-      accent: z.enum(ACCENTS).optional(),
+      accent: z.enum(ACCENTS).optional().nullable(),
     }),
     9,
   ),
 });
 
 export const experienceSection = z.strictObject({
+  enabled: z.boolean().default(true),
   title: line(120),
   lead: para(300),
   jobs: list(
@@ -117,6 +147,7 @@ export const experienceSection = z.strictObject({
 });
 
 export const credentialsSection = z.strictObject({
+  enabled: z.boolean().default(true),
   title: line(120),
   education: list(z.strictObject({ degree: line(120), school: line(120), location: line(80), year: line(20) }), 8),
   community: list(z.strictObject({ role: line(80), org: line(120), detail: line(160), logoUrl: url }), 12),
@@ -124,35 +155,74 @@ export const credentialsSection = z.strictObject({
 });
 
 export const awardsSection = z.strictObject({
+  enabled: z.boolean().default(true),
   title: line(120),
   lead: para(300),
+
+  // Card 1: Credentials / Certifications
+  card1Title: line(120).default("Accredited credentials"),
+  card1Description: para(400).default(
+    "Formal industry accreditations spanning IS/IT systems audit, enterprise network security, and risk compliance.",
+  ),
+  card1Image: optionalUrl,
   certifications: list(
     z.strictObject({
       name: line(120),
       issuer: line(120),
       year: line(20),
-      credentialId: z.string().trim().max(120).optional(),
-      badge: z.string().trim().max(60).optional(),
+      credentialId: optionalLine(120),
+      badge: optionalLine(60),
+      imageUrl: optionalUrl,
+      credentialUrl: optionalHref,
     }),
     12,
   ),
+
+  // Card 2: Honors & Leadership
+  card2Title: line(120).default("Honors & leadership"),
+  card2Description: para(400).default(
+    "Recognized for national cybersecurity policy advocacy, executive training, and pioneering the open internet ecosystem.",
+  ),
+  card2Image: optionalUrl,
   awards: list(
     z.strictObject({
       title: line(120),
       issuer: line(120),
       year: line(20),
       description: para(400),
+      imageUrl: optionalUrl,
+      certificateUrl: optionalHref,
     }),
     12,
   ),
+
+  // Card 3: Proven Governance & Track Record Metrics
+  card3Title: line(120).default("Proven governance"),
+  card3Description: para(400).default(
+    "Over fifteen years of securing critical infrastructure, performing rigorous audits, and advising executive leadership.",
+  ),
+  card3Image: optionalUrl,
+  metrics: list(
+    z.strictObject({
+      label: line(80),
+      value: line(30),
+    }),
+    8,
+  ).default([
+    { label: "IS/IT audits completed", value: "100+" },
+    { label: "Years of security practice", value: "15+" },
+    { label: "System uptime & reliability", value: "99.9%" },
+  ]),
 });
 
 export const blogSection = z.strictObject({
+  enabled: z.boolean().default(true),
   title: line(120),
   lead: para(300),
 });
 
 export const contactSection = z.strictObject({
+  enabled: z.boolean().default(true),
   title: line(120),
   lead: para(400),
   email: z.email().max(254),
@@ -227,7 +297,7 @@ export const blogPostInput = z.strictObject({
   category: line(64),
   tags: z.array(line(40)).max(10).default([]),
   cover: z.enum(COVERS).default("rings"),
-  coverImage: url.nullable().optional(),
+  coverImage: optionalUrl,
   draft: z.boolean().default(false),
   publishedAt: z.coerce.date().optional(),
 });
@@ -246,7 +316,7 @@ export const resourceInput = z.strictObject({
   summary: z.string().trim().min(10).max(320),
   body: z.string().trim().max(100_000).default(""),
   type: z.enum(RESOURCE_TYPES),
-  url: href.nullable().optional(),
+  url: optionalHref,
   category: line(64),
   featured: z.boolean().default(false),
   draft: z.boolean().default(false),

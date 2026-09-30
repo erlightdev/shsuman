@@ -2,6 +2,7 @@ import { blogPostInput, COVERS } from "@shsuman/api/content/schema";
 import { ArrowLeft, ExternalLink, Loader2, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { AttachmentUpload } from "@/components/ui/attachment-upload";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -224,15 +225,17 @@ export function PostEditor({ slug }: { slug: string }) {
                   </SelectContent>
                 </Select>
               </div>
-              <TextField
-                label="Cover image (optional)"
-                type="url"
-                value={form.coverImage}
-                onChange={(v) => set("coverImage", v)}
-                error={errors.coverImage}
-                placeholder="https://…"
-                hint="Replaces the generated cover art."
-              />
+              <div className="space-y-2">
+                <AttachmentUpload
+                  label="Cover image (optional)"
+                  value={form.coverImage}
+                  onChange={(url) => set("coverImage", url)}
+                  accept="image/*"
+                  previewType="image"
+                  hint="Replaces the generated cover art."
+                />
+                {errors.coverImage && <p className="text-sm text-destructive">{errors.coverImage}</p>}
+              </div>
             </div>
           </aside>
         </div>

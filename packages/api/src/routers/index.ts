@@ -42,6 +42,11 @@ export const appRouter = {
       .handler(({ context, input }) =>
         updateSection(context.db, input.section, input.data, context.session.user.email),
       ),
+    toggle: editorProcedure
+      .input(z.object({ section: sectionKey, enabled: z.boolean() }))
+      .handler(({ context, input }) =>
+        updateSection(context.db, input.section, { enabled: input.enabled }, context.session.user.email),
+      ),
     reset: editorProcedure
       .input(z.object({ section: sectionKey }))
       .handler(({ context, input }) => resetSection(context.db, input.section)),

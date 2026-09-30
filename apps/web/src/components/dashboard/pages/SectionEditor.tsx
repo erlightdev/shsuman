@@ -21,6 +21,7 @@ const previewAnchor: Partial<Record<SectionKey, string>> = {
   work: "/#work",
   experience: "/#experience",
   credentials: "/#credentials",
+  awards: "/#awards",
   blog: "/#blog",
   contact: "/#contact",
   footer: "/blog/",
@@ -30,7 +31,15 @@ const previewAnchor: Partial<Record<SectionKey, string>> = {
 export function SectionEditor({ section }: { section: string }) {
   const key = section as SectionKey;
   const valid = SECTION_KEYS.includes(key);
-  const schema = useMemo(() => (valid ? (z.toJSONSchema(sectionSchemas[key]) as JsonSchema) : null), [key, valid]);
+  const schema = useMemo(() => {
+    if (!valid) return null;
+    try {
+      return z.toJSONSchema(sectionSchemas[key]) as JsonSchema;
+    } catch (err) {
+      console.error("Failed to generate JSON schema for section:", key, err);
+      return null;
+    }
+  }, [key, valid]);
   const [value, setValue] = useState<Record<string, unknown> | null>(null);
   const [saved, setSaved] = useState<string>("");
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -39,14 +48,25 @@ export function SectionEditor({ section }: { section: string }) {
   const { loading, error } = useLoader(async () => {
     if (!valid) return null;
     const content = await orpc.content.get();
-    const current = content[key] as Record<string, unknown>;
+    const current = (content[key] ?? {}) as Record<string, unknown>;
     setValue(current);
     setSaved(JSON.stringify(current));
     return current;
   }, [key]);
 
-  if (!valid || !schema) {
+  if (!valid) {
     return <p className="text-sm text-muted-foreground">Unknown section “{section}”.</p>;
+  }
+
+  if (!schema) {
+    return (
+      <div className="rounded-2xl border border-destructive/20 bg-destructive/10 p-6 text-center">
+        <p className="font-medium text-destructive">Could not load editor schema for section “{section}”.</p>
+        <Button asChild variant="outline" size="sm" className="mt-4 rounded-full">
+          <a href="/dashboard/content">Back to Homepage Sections</a>
+        </Button>
+      </div>
+    );
   }
 
   const meta = SECTION_LABELS[key];

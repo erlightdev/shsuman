@@ -56,3 +56,14 @@ coverage
 .cache
 tmp
 temp
+
+# Uploads / Media storage (isolated from git and deployments)
+uploads
+uploads/*
+!uploads/.gitkeep
+apps/server/uploads
+apps/server/uploads/*
+!apps/server/uploads/.gitkeep
+apps/web/public/uploads
+apps/web/public/uploads/*
+!apps/web/public/uploads/.gitkeep

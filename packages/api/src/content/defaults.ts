@@ -18,6 +18,7 @@ export const defaultContent: SiteContent = {
     cvUrl: "/suman-k-sharma-cv.pdf",
   },
   hero: {
+    enabled: true,
     flipPrefix: "IT & Cybersecurity",
     flipWords: ["Engineer", "Consultant", "Trainer"],
     lead: "18+ years securing and running IT infrastructure for government, banking, aviation and education organizations in Nepal and abroad — from IS/IT audits and risk management to executive leadership.",
@@ -28,6 +29,7 @@ export const defaultContent: SiteContent = {
     ],
   },
   about: {
+    enabled: true,
     title: "Keeping critical systems secure since 2006.",
     summary:
       "I lead Insight Technology, advising government, banking and education organizations on IT infrastructure, IS/IT audits and cyber risk.",
@@ -42,6 +44,7 @@ export const defaultContent: SiteContent = {
     interests: ["Poetry", "Literature", "Travel", "Hiking"],
   },
   services: {
+    enabled: true,
     title: "What I help organizations with.",
     lead: "Advisory, training and hands-on delivery across security, infrastructure and technology policy.",
     items: [
@@ -80,6 +83,7 @@ export const defaultContent: SiteContent = {
     ],
   },
   work: {
+    enabled: true,
     title: "Key implementations.",
     items: [
       {
@@ -106,6 +110,7 @@ export const defaultContent: SiteContent = {
     ],
   },
   experience: {
+    enabled: true,
     title: "Career path.",
     lead: "From field IT support to network engineering and executive leadership.",
     jobs: [
@@ -159,6 +164,7 @@ export const defaultContent: SiteContent = {
     ],
   },
   credentials: {
+    enabled: true,
     title: "Education, leadership & core skills.",
     education: [
       {
@@ -210,8 +216,12 @@ export const defaultContent: SiteContent = {
     ],
   },
   awards: {
+    enabled: true,
     title: "Certifications & industry honors.",
     lead: "Professional accreditations, audit credentials, and leadership awards across cybersecurity and digital governance.",
+    card1Title: "Accredited credentials",
+    card1Description:
+      "Formal industry accreditations spanning IS/IT systems audit, enterprise network security, and risk compliance.",
     certifications: [
       {
         name: "Information Security & IT Audit Specialist",
@@ -235,6 +245,9 @@ export const defaultContent: SiteContent = {
         badge: "Networking",
       },
     ],
+    card2Title: "Honors & leadership",
+    card2Description:
+      "Recognized for national cybersecurity policy advocacy, executive training, and pioneering the open internet ecosystem.",
     awards: [
       {
         title: "Cybersecurity Leadership & Community Excellence Award",
@@ -249,12 +262,22 @@ export const defaultContent: SiteContent = {
         description: "Honored for founding board leadership and dedicated advocacy in digital governance and tech policy.",
       },
     ],
+    card3Title: "Proven governance",
+    card3Description:
+      "Over fifteen years of securing critical infrastructure, performing rigorous audits, and advising executive leadership.",
+    metrics: [
+      { label: "IS/IT audits completed", value: "100+" },
+      { label: "Years of security practice", value: "15+" },
+      { label: "System uptime & reliability", value: "99.9%" },
+    ],
   },
   blog: {
+    enabled: true,
     title: "Notes from the field.",
     lead: "Writing on security, audits, training and technology policy.",
   },
   contact: {
+    enabled: true,
     title: "Let's strengthen your security posture.",
     lead: "Ready to strengthen your organization's IT infrastructure and cybersecurity? Reach out for advisory, audits or training.",
     email: "contact@shsuman.com.np",
