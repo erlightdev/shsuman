@@ -15,8 +15,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ENV } from "@/env";
 import { resolveMediaUrl } from "@/lib/media";
+import { SERVER_URL } from "@/lib/server-url";
 import { cn } from "@/lib/utils";
 
 export interface AttachmentUploadProps {
@@ -85,21 +85,7 @@ export function AttachmentUpload({
       formData.append("file", file);
 
       try {
-        let serverBase = "";
-        try {
-          if (typeof ENV !== "undefined" && ENV) {
-            serverBase = ((ENV as unknown as Record<string, string>)["PUBLIC_SERVER_URL"] || "").replace(/\/$/, "");
-          }
-        } catch {
-          // Varlock proxy in browser
-        }
-        if (!serverBase && typeof import.meta !== "undefined" && import.meta.env?.PUBLIC_SERVER_URL) {
-          serverBase = String(import.meta.env.PUBLIC_SERVER_URL).replace(/\/$/, "");
-        }
-        if (!serverBase) {
-          serverBase = "http://localhost:3000";
-        }
-        const uploadEndpoint = `${serverBase}/api/upload`;
+        const uploadEndpoint = `${SERVER_URL}/api/upload`;
 
         const xhr = new XMLHttpRequest();
 

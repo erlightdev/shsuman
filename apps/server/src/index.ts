@@ -44,8 +44,20 @@ app.use(
   }),
 );
 
-// Serve static uploads
-app.use("/uploads", express.static(uploadsDir));
+// Serve static uploads. Sandbox them so an uploaded SVG can't run script on the API origin.
+app.use(
+  "/uploads",
+  express.static(uploadsDir, {
+    setHeaders: (res, filePath) => {
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+      // Not on PDFs: a sandbox CSP stops the browser's PDF viewer from rendering.
+      if (filePath.toLowerCase().endsWith(".svg")) {
+        res.setHeader("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; sandbox");
+      }
+    },
+  }),
+);
 
 app.all("/api/auth{/*path}", toNodeHandler(auth));
 app.use("/api/upload", uploadRouter);

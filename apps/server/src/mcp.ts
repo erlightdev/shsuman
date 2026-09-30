@@ -4,6 +4,7 @@ import { createMcpServer } from "@shsuman/api/mcp/tools";
 import express, { type Request, type Response, Router } from "express";
 
 import { db } from "./services";
+import { saveUpload } from "./upload";
 
 /**
  * Content MCP endpoint (Streamable HTTP, stateless).
@@ -11,7 +12,8 @@ import { db } from "./services";
  */
 export const mcpRouter = Router();
 
-mcpRouter.use(express.json({ limit: "1mb" }));
+// Room for base64 media in upload_media (20 MB file ≈ 27 MB encoded).
+mcpRouter.use(express.json({ limit: "30mb" }));
 
 mcpRouter.post("/", async (req: Request, res: Response) => {
   const header = req.headers.authorization ?? "";
@@ -25,7 +27,7 @@ mcpRouter.post("/", async (req: Request, res: Response) => {
     return;
   }
 
-  const server = createMcpServer({ db, actor: { email: owner.email } });
+  const server = createMcpServer({ db, actor: { email: owner.email }, storeFile: saveUpload });
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
   res.on("close", () => {
     void transport.close();

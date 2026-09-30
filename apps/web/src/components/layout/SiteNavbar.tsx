@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { Dock, DockItem, DockSeparator } from "@/components/motion/dock";
 
 interface Props {
-  name: string;
+  name?: string;
   items: { name: string; link: string }[];
 }
 
@@ -43,7 +43,7 @@ function toggleTheme() {
   } catch {}
 }
 
-export function SiteNavbar({ name, items }: Props) {
+export function SiteNavbar({ items }: Props) {
   const [active, setActive] = useState<string>(() => {
     if (typeof window !== "undefined") {
       const hash = window.location.hash;
@@ -118,12 +118,13 @@ export function SiteNavbar({ name, items }: Props) {
           <DockItem
             href="/"
             aria-label="Home"
+            title="Home"
+            showTooltipOnDesktop
             active={active === "/"}
             onClick={() => setActive("/")}
-            className="md:px-3.5"
+            className="size-10 px-0"
           >
             <Home className="size-4 shrink-0" aria-hidden="true" />
-            <span className="hidden md:inline font-medium">Home</span>
           </DockItem>
 
           <DockSeparator />
@@ -158,12 +159,13 @@ export function SiteNavbar({ name, items }: Props) {
           <DockItem
             href="/#contact"
             aria-label="Contact"
+            title="Contact"
+            showTooltipOnDesktop
             active={active === "/#contact"}
             onClick={() => setActive("/#contact")}
-            className="md:px-3.5"
+            className="size-10 px-0"
           >
             <Mail className="size-4 shrink-0" aria-hidden="true" />
-            <span className="hidden md:inline font-medium">Contact</span>
           </DockItem>
 
           {/* Theme Toggle */}

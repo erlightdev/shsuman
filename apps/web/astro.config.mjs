@@ -4,11 +4,33 @@ import react from "@astrojs/react";
 import tailwindcss from "@tailwindcss/vite";
 import varlockAstroIntegration from "@varlock/astro-integration";
 import { defineConfig } from "astro/config";
+import { ENV } from "varlock/env";
+
+/**
+ * PUBLIC_SERVER_URL is inlined into the client at build time (auth, API,
+ * uploads and the MCP endpoint shown in the dashboard). Stop a production
+ * build that would ship a localhost or plain-http API URL.
+ */
+const requireHttpsServerUrl = {
+  name: "require-https-server-url",
+  hooks: {
+    "astro:build:start": () => {
+      const url = String(ENV.PUBLIC_SERVER_URL ?? "");
+      const local = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:|\/|$)/.test(url);
+      if (process.env.ALLOW_LOCAL_SERVER_URL !== "1" && (local || !url.startsWith("https://"))) {
+        throw new Error(
+          `PUBLIC_SERVER_URL is "${url}". Set it to the https API origin for production builds, ` +
+            "e.g. PUBLIC_SERVER_URL=https://api.shsuman.com.np (or ALLOW_LOCAL_SERVER_URL=1 for a local test build).",
+        );
+      }
+    },
+  },
+};
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://shsuman.com.np",
-  integrations: [varlockAstroIntegration({ ssrInjectMode: "auto-load" }), react()],
+  integrations: [varlockAstroIntegration({ ssrInjectMode: "auto-load" }), react(), requireHttpsServerUrl],
   output: "server",
   adapter: node({ mode: "standalone" }),
   vite: {

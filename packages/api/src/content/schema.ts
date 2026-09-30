@@ -289,20 +289,28 @@ export const slug = z
   .max(160)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers and hyphens");
 
-export const blogPostInput = z.strictObject({
+const blogPostFields = {
   slug: slug.optional(),
   title: line(200),
   description: z.string().trim().min(20).max(320),
   body: z.string().trim().min(1).max(100_000),
   category: line(64),
-  tags: z.array(line(40)).max(10).default([]),
-  cover: z.enum(COVERS).default("rings"),
+  tags: z.array(line(40)).max(10),
+  cover: z.enum(COVERS),
   coverImage: optionalUrl,
-  draft: z.boolean().default(false),
+  draft: z.boolean(),
   publishedAt: z.coerce.date().optional(),
+};
+
+export const blogPostInput = z.strictObject({
+  ...blogPostFields,
+  tags: blogPostFields.tags.default([]),
+  cover: blogPostFields.cover.default("rings"),
+  draft: blogPostFields.draft.default(false),
 });
 
-export const blogPostPatch = blogPostInput.partial();
+/** No defaults here: a partial edit must leave omitted fields (draft, tags, cover) untouched. */
+export const blogPostPatch = z.strictObject(blogPostFields).partial();
 
 export type BlogPostInput = z.infer<typeof blogPostInput>;
 
@@ -310,19 +318,27 @@ export type BlogPostInput = z.infer<typeof blogPostInput>;
 
 export const RESOURCE_TYPES = ["guide", "template", "checklist", "talk", "link", "tool"] as const;
 
-export const resourceInput = z.strictObject({
+const resourceFields = {
   slug: slug.optional(),
   title: line(200),
   summary: z.string().trim().min(10).max(320),
-  body: z.string().trim().max(100_000).default(""),
+  body: z.string().trim().max(100_000),
   type: z.enum(RESOURCE_TYPES),
   url: optionalHref,
   category: line(64),
-  featured: z.boolean().default(false),
-  draft: z.boolean().default(false),
+  featured: z.boolean(),
+  draft: z.boolean(),
   publishedAt: z.coerce.date().optional(),
+};
+
+export const resourceInput = z.strictObject({
+  ...resourceFields,
+  body: resourceFields.body.default(""),
+  featured: resourceFields.featured.default(false),
+  draft: resourceFields.draft.default(false),
 });
 
-export const resourcePatch = resourceInput.partial();
+/** No defaults here: a partial edit must leave omitted fields (draft, body, featured) untouched. */
+export const resourcePatch = z.strictObject(resourceFields).partial();
 
 export type ResourceInput = z.infer<typeof resourceInput>;

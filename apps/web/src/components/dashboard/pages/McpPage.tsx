@@ -7,29 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ENV } from "@/env";
 import { orpc } from "@/lib/orpc";
+import { SERVER_URL } from "@/lib/server-url";
 
 import { ConfirmDialog } from "../ConfirmDialog";
 import { errorMessage, useLoader } from "../hooks";
 import { PageHeader } from "../PageHeader";
 
-function getMcpEndpoint(): string {
-  try {
-    if (typeof ENV !== "undefined" && ENV) {
-      const val = (ENV as unknown as Record<string, string>)["PUBLIC_SERVER_URL"];
-      if (val) return `${val.replace(/\/$/, "")}/mcp`;
-    }
-  } catch {}
-  try {
-    if (typeof import.meta !== "undefined" && import.meta.env?.PUBLIC_SERVER_URL) {
-      return `${String(import.meta.env.PUBLIC_SERVER_URL).replace(/\/$/, "")}/mcp`;
-    }
-  } catch {}
-  return "http://localhost:3000/mcp";
-}
-
-const endpoint = getMcpEndpoint();
+const endpoint = `${SERVER_URL}/mcp`;
 
 function CopyButton({ value, label }: { value: string; label: string }) {
   const [copied, setCopied] = useState(false);
