@@ -1,8 +1,4 @@
 ---
-import { AuthForm } from "../components/auth/AuthForm";
-import AuthLayout from "../layouts/AuthLayout.astro";
+// Registration is closed: this site has a single admin account. New users are added from /dashboard/users.
+return Astro.redirect("/login", 308);
 ---
-
-<AuthLayout title="Create account — Suman K. Sharma">
-  <AuthForm mode="sign-up" client:load />
-</AuthLayout>

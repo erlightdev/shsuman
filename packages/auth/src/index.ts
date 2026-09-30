@@ -2,6 +2,7 @@ import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
 import type { Database } from "@shsuman/db";
 import * as schema from "@shsuman/db/schema/auth";
 import { betterAuth } from "better-auth";
+import { APIError, createAuthMiddleware } from "better-auth/api";
 import { admin } from "better-auth/plugins";
 import { count } from "drizzle-orm";
 
@@ -45,6 +46,17 @@ export function createAuth(
           },
         },
       },
+    },
+    hooks: {
+      // Public registration is closed. Sign-up only works to bootstrap the very first
+      // (admin) account on an empty database; later users are created by an admin.
+      before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path !== "/sign-up/email") return;
+        const [row] = await database.select({ total: count() }).from(schema.user);
+        if ((row?.total ?? 0) > 0) {
+          throw new APIError("FORBIDDEN", { message: "Registration is closed." });
+        }
+      }),
     },
     plugins: [admin({ ac, roles, defaultRole: "user", adminRoles: ["admin"] })],
   });

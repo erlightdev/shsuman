@@ -1,0 +1,51 @@
+---
+import Icon from "@/components/common/Icon.astro";
+import { StudioBackground } from "@/components/ui/studio-background";
+import Layout from "@/layouts/Layout.astro";
+import { getContent } from "@/lib/content";
+
+export const prerender = false;
+
+const { profile } = await getContent();
+Astro.response.status = 404;
+---
+
+<Layout title={`Page not found — ${profile.name}`} description="The page you are looking for does not exist." siteName={profile.name} noindex>
+  <div class="relative flex min-h-dvh flex-col bg-[#03120a] p-4 text-white sm:p-6">
+    <div aria-hidden="true" class="pointer-events-none fixed inset-0 z-0">
+      <StudioBackground client:load />
+      <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60"></div>
+    </div>
+
+    <header class="relative z-10">
+      <a
+        href="/"
+        class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3.5 py-1.5 text-xs font-medium text-white/90 backdrop-blur-md transition-colors hover:bg-white/20 hover:text-white sm:text-sm"
+      >
+        <Icon name="arrow-up" class="size-3.5 -rotate-90 sm:size-4" />
+        {profile.name}
+      </a>
+    </header>
+
+    <main id="main" class="relative z-10 grid flex-1 place-items-center py-16">
+      <div class="max-w-xl text-center">
+        <p class="font-mono text-xs uppercase tracking-wider text-white/60">Error 404</p>
+        <h1 class="mt-4 text-5xl font-semibold tracking-tight sm:text-7xl">Page not found.</h1>
+        <p class="mt-5 text-base leading-7 text-white/70 sm:text-lg">
+          The page you are looking for has moved or never existed.
+        </p>
+        <div class="mt-10 flex flex-wrap justify-center gap-3">
+          <a href="/" class="inline-flex h-10 items-center gap-2 rounded-full bg-white px-5 text-sm font-medium text-[#03120a] transition-colors hover:bg-white/90">
+            Back to home
+          </a>
+          <a href="/blog/" class="inline-flex h-10 items-center rounded-full border border-white/15 bg-white/5 px-5 text-sm font-medium text-white/90 backdrop-blur-md transition-colors hover:bg-white/15">
+            Read the blog
+          </a>
+          <a href="/#contact" class="inline-flex h-10 items-center rounded-full border border-white/15 bg-white/5 px-5 text-sm font-medium text-white/90 backdrop-blur-md transition-colors hover:bg-white/15">
+            Contact
+          </a>
+        </div>
+      </div>
+    </main>
+  </div>
+</Layout>

@@ -1,4 +1,4 @@
-import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -16,9 +16,6 @@ const copy = {
 		// description: "Manage portfolio content, blog posts, and site settings.",
 		submit: "Sign in",
 		pending: "Signing in…",
-		switchText: "Don't have an account?",
-		switchLabel: "Create one",
-		switchHref: "/signup",
 	},
 	"sign-up": {
 		eyebrow: "Admin workspace",
@@ -27,9 +24,6 @@ const copy = {
 		// 	"Set up admin access to manage your portfolio and publish articles.",
 		submit: "Create account",
 		pending: "Creating account…",
-		switchText: "Already have an account?",
-		switchLabel: "Sign in",
-		switchHref: "/login",
 	},
 } as const;
 
@@ -215,18 +209,6 @@ export function AuthForm({ mode }: { mode: Mode }) {
 				</Button>
 			</form>
 
-			<p className="mt-4 text-center text-muted-foreground text-xs">
-				{text.switchText}{" "}
-				<a
-					href={text.switchHref}
-					className="inline-flex items-center gap-1 font-medium text-foreground underline-offset-4 hover:underline"
-				>
-					{mode === "sign-up" && (
-						<ArrowLeft className="size-3" aria-hidden="true" />
-					)}
-					{text.switchLabel}
-				</a>
-			</p>
 			<Toaster position="bottom-right" />
 		</div>
 	);
