@@ -8,7 +8,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - DATABASE_URL=mysql://shsuman:ShsumanDbPass2026#@mariadb-copy-1080p-interface-hywpam:3306/shsuman
+      - DATABASE_URL=mysql://shsuman:ShsumanDbPass2026%23@mariadb-copy-1080p-interface-hywpam:3306/shsuman
       - BETTER_AUTH_SECRET=qbgkzDPM7SgOBx8P2ZpfLNozBXugbWd6
       - BETTER_AUTH_URL=https://api.shsuman.com.np
       - CORS_ORIGIN=https://shsuman.com.np
