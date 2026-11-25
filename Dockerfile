@@ -11,7 +11,7 @@ COPY packages ./packages
 COPY apps ./apps
 
 # Install all workspace dependencies
-RUN npm ci
+RUN npm install
 
 # Production build environment
 ENV NODE_ENV=production
