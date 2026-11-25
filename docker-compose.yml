@@ -1,0 +1,36 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: server
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=mysql://shsuman:ShsumanDbPass2026#@mariadb-copy-1080p-interface-hywpam:3306/shsuman
+      - BETTER_AUTH_SECRET=qbgkzDPM7SgOBx8P2ZpfLNozBXugbWd6
+      - BETTER_AUTH_URL=https://api.shsuman.com.np
+      - CORS_ORIGIN=https://shsuman.com.np
+    networks:
+      - dokploy-network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=4321
+      - PUBLIC_SERVER_URL=https://api.shsuman.com.np
+    networks:
+      - dokploy-network
+    depends_on:
+      - server
+
+networks:
+  dokploy-network:
+    external: true
